@@ -67,24 +67,19 @@ export default function Navbar() {
   // Scroll spy effect
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight / 3;
+      const scrollPosition = window.scrollY + 200; // Smaller offset for better accuracy
 
-      // Check each section from bottom to top
-      for (let i = navItems.length - 1; i >= 0; i--) {
+      // Get section positions and find current one
+      let currentIndex = 0;
+
+      for (let i = 0; i < navItems.length; i++) {
         const section = document.getElementById(navItems[i].sectionId);
-        if (section) {
-          const sectionTop = section.offsetTop;
-          if (scrollPosition >= sectionTop) {
-            setActiveIndex(i);
-            break;
-          }
+        if (section && scrollPosition >= section.offsetTop) {
+          currentIndex = i;
         }
       }
 
-      // If at the very top, set to Home
-      if (window.scrollY < 100) {
-        setActiveIndex(0);
-      }
+      setActiveIndex(currentIndex);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
