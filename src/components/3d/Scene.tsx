@@ -9,30 +9,13 @@ interface SceneProps {
 export default function Scene({ introComplete = false }: SceneProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const starsRef = useRef<HTMLCanvasElement>(null);
-    const [blurAmount, setBlurAmount] = useState(30);
+    const [visible, setVisible] = useState(false);
 
-    // Smooth blur transition after intro
+    // Simple fade in after intro - much faster than blur
     useEffect(() => {
         if (introComplete) {
-            // Slow, smooth transition from blur to clear
-            let blur = 30;
-            const startTime = performance.now();
-            const duration = 2000; // 2 seconds for smooth transition
-
-            const animateBlur = () => {
-                const elapsed = performance.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                // Smooth easing (ease-out cubic)
-                const eased = 1 - Math.pow(1 - progress, 3);
-                blur = 30 * (1 - eased);
-                setBlurAmount(blur);
-
-                if (progress < 1) {
-                    requestAnimationFrame(animateBlur);
-                }
-            };
-
-            requestAnimationFrame(animateBlur);
+            const timer = setTimeout(() => setVisible(true), 100);
+            return () => clearTimeout(timer);
         }
     }, [introComplete]);
 
@@ -59,11 +42,10 @@ export default function Scene({ introComplete = false }: SceneProps) {
         }
 
         const stars: Star[] = [];
-        const numStars = 300;
+        const numStars = 100; // Reduced for better performance
         const colors = [
             'rgba(255, 255, 255, ',
             'rgba(200, 220, 255, ',
-            'rgba(220, 220, 240, ',
         ];
 
         function initStars() {
@@ -155,6 +137,7 @@ export default function Scene({ introComplete = false }: SceneProps) {
             }
         `;
 
+        // Simplified shader for better performance
         const fsSource = `
             precision mediump float;
             uniform float t;
@@ -187,7 +170,7 @@ export default function Scene({ introComplete = false }: SceneProps) {
                     o_bg *= max(o_bg, vec4(0.0));
                 }
 
-                // Animation Layer
+                // Animation Layer (simplified - reduced iterations)
                 {
                     vec2 p_anim = ((gl_FragCoord.xy - centerOffset) * 2.0 - r) / r.y / 0.7;
                     vec2 d = vec2(-1.0, 1.0);
@@ -196,7 +179,7 @@ export default function Scene({ introComplete = false }: SceneProps) {
                     vec2 v = c;
                     v *= mat2(cos(log(length(v)) + t * 0.2 + vec4(0.0, 33.0, 11.0, 0.0))) * 5.0;
                     vec4 animAccum = vec4(0.0);
-                    for (int i = 1; i <= 9; i++) {
+                    for (int i = 1; i <= 6; i++) { // Reduced from 9 to 6 iterations
                         float fi = float(i);
                         animAccum += sin(vec4(v.x, v.y, v.y, v.x)) + vec4(1.0);
                         v += 0.7 * sin(vec2(v.y, v.x) * fi + t) / fi + 0.5;
@@ -302,8 +285,10 @@ export default function Scene({ introComplete = false }: SceneProps) {
         window.addEventListener('resize', resize);
         resize();
 
+        // Start with correct offset (black hole on right)
         let scrollProgress = 0;
         let targetScrollProgress = 0;
+
         function handleScroll() {
             const scrollY = window.scrollY;
             const heroHeight = window.innerHeight;
@@ -311,6 +296,8 @@ export default function Scene({ introComplete = false }: SceneProps) {
         }
         window.addEventListener('scroll', handleScroll);
         handleScroll();
+        // Initialize to current scroll position immediately
+        scrollProgress = targetScrollProgress;
 
         const startTime = performance.now();
         let animationId: number;
@@ -320,7 +307,9 @@ export default function Scene({ introComplete = false }: SceneProps) {
             const currentTime = performance.now();
             const delta = (currentTime - startTime) / 1000;
 
-            scrollProgress += (targetScrollProgress - scrollProgress) * 0.03;
+            // Smooth scroll interpolation
+            scrollProgress += (targetScrollProgress - scrollProgress) * 0.05;
+            // Black hole on right side (offset 0.7 when at top)
             const offset = 0.7 * (1 - scrollProgress);
 
             gl!.uniform1f(timeLocation, delta);
@@ -347,14 +336,15 @@ export default function Scene({ introComplete = false }: SceneProps) {
                 className="fixed top-0 left-0 w-full h-full -z-20"
                 style={{ background: '#000', pointerEvents: 'none' }}
             />
-            {/* Black Hole Effect - with smooth blur intro */}
+            {/* Black Hole Effect - simple opacity fade instead of blur */}
             <canvas
                 ref={canvasRef}
                 className="fixed top-0 left-0 w-full h-full -z-10"
                 style={{
                     background: 'transparent',
                     pointerEvents: 'none',
-                    filter: `blur(${blurAmount}px)`,
+                    opacity: visible ? 1 : 0,
+                    transition: 'opacity 1s ease-out',
                 }}
             />
         </>

@@ -41,8 +41,10 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
                 backdropFilter: phase === 'blur' ? 'blur(20px)' : 'none',
                 WebkitBackdropFilter: phase === 'blur' ? 'blur(20px)' : 'none',
                 opacity: phase === 'blur' ? 0 : 1,
-                transition: 'opacity 1s ease-out, backdrop-filter 0.5s ease-out',
-                pointerEvents: 'none'
+                transition: 'opacity 0.8s ease-out',
+                pointerEvents: 'none',
+                willChange: 'opacity',
+                transform: 'translateZ(0)', // Force GPU layer
             }}
         >
             {phase === 'hello' && (
