@@ -1,0 +1,362 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+
+interface SceneProps {
+    introComplete?: boolean;
+}
+
+export default function Scene({ introComplete = false }: SceneProps) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const starsRef = useRef<HTMLCanvasElement>(null);
+    const [blurAmount, setBlurAmount] = useState(30);
+
+    // Smooth blur transition after intro
+    useEffect(() => {
+        if (introComplete) {
+            // Slow, smooth transition from blur to clear
+            let blur = 30;
+            const startTime = performance.now();
+            const duration = 2000; // 2 seconds for smooth transition
+
+            const animateBlur = () => {
+                const elapsed = performance.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Smooth easing (ease-out cubic)
+                const eased = 1 - Math.pow(1 - progress, 3);
+                blur = 30 * (1 - eased);
+                setBlurAmount(blur);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateBlur);
+                }
+            };
+
+            requestAnimationFrame(animateBlur);
+        }
+    }, [introComplete]);
+
+    // Interactive Stars Background
+    useEffect(() => {
+        const canvas = starsRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let mouseX = 0;
+        let mouseY = 0;
+        let animationId: number;
+
+        interface Star {
+            x: number;
+            y: number;
+            z: number;
+            size: number;
+            color: string;
+            twinkleSpeed: number;
+            twinkleOffset: number;
+        }
+
+        const stars: Star[] = [];
+        const numStars = 300;
+        const colors = [
+            'rgba(255, 255, 255, ',
+            'rgba(200, 220, 255, ',
+            'rgba(220, 220, 240, ',
+        ];
+
+        function initStars() {
+            stars.length = 0;
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas!.width,
+                    y: Math.random() * canvas!.height,
+                    z: Math.random() * 1.5 + 0.3,
+                    size: Math.random() * 1.0 + 0.3,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    twinkleSpeed: Math.random() * 0.01 + 0.005,
+                    twinkleOffset: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        function resize() {
+            if (!canvas) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function handleMouseMove(e: MouseEvent) {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        }
+
+        function drawStars(time: number) {
+            if (!ctx || !canvas) return;
+
+            stars.forEach(star => {
+                const parallaxX = mouseX * star.z * 8;
+                const parallaxY = mouseY * star.z * 8;
+
+                const x = star.x + parallaxX;
+                const y = star.y + parallaxY;
+
+                const wrappedX = ((x % canvas.width) + canvas.width) % canvas.width;
+                const wrappedY = ((y % canvas.height) + canvas.height) % canvas.height;
+
+                const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset) * 0.2 + 0.8;
+                const opacity = twinkle * (0.15 + star.z * 0.15);
+
+                ctx.beginPath();
+                ctx.arc(wrappedX, wrappedY, star.size * star.z, 0, Math.PI * 2);
+                ctx.fillStyle = star.color + opacity + ')';
+                ctx.fill();
+            });
+        }
+
+        function animate() {
+            if (!ctx || !canvas) return;
+            const time = performance.now();
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            drawStars(time);
+            animationId = requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', handleMouseMove);
+        resize();
+        animate();
+
+        return () => {
+            window.removeEventListener('resize', resize);
+            window.removeEventListener('mousemove', handleMouseMove);
+            cancelAnimationFrame(animationId);
+        };
+    }, []);
+
+    // Main black hole shader - original position (right side)
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const gl = canvas.getContext('webgl');
+        if (!gl) {
+            console.error("WebGL not supported");
+            return;
+        }
+
+        const vsSource = `
+            attribute vec2 a_position;
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+            }
+        `;
+
+        const fsSource = `
+            precision mediump float;
+            uniform float t;
+            uniform vec2 r;
+            uniform float scrollOffset;
+            
+            vec2 myTanh(vec2 x) {
+                vec2 ex = exp(x);
+                vec2 emx = exp(-x);
+                return (ex - emx) / (ex + emx);
+            }
+            
+            void main() {
+                vec4 o_bg = vec4(0.0);
+                vec4 o_anim = vec4(0.0);
+
+                vec2 centerOffset = vec2(scrollOffset * r.x * 0.3, 0.0);
+
+                // Background Layer
+                {
+                    vec2 p_img = ((gl_FragCoord.xy - centerOffset) * 2.0 - r) / r.y * mat2(1.0, -1.0, 1.0, 1.0);
+                    vec2 l_val = myTanh(p_img * 5.0 + 2.0);
+                    l_val = min(l_val, l_val * 3.0);
+                    vec2 clamped = clamp(l_val, -2.0, 0.0);
+                    float diff_y = clamped.y - l_val.y;
+                    float safe_px = abs(p_img.x) < 0.001 ? 0.001 : p_img.x;
+                    float term = (0.1 - max(0.01 - dot(p_img, p_img) / 200.0, 0.0) * (diff_y / safe_px))
+                                 / abs(length(p_img) - 0.7);
+                    o_bg += vec4(term);
+                    o_bg *= max(o_bg, vec4(0.0));
+                }
+
+                // Animation Layer
+                {
+                    vec2 p_anim = ((gl_FragCoord.xy - centerOffset) * 2.0 - r) / r.y / 0.7;
+                    vec2 d = vec2(-1.0, 1.0);
+                    float denom = 0.1 + 5.0 / dot(5.0 * p_anim - d, 5.0 * p_anim - d);
+                    vec2 c = p_anim * mat2(1.0, 1.0, d.x / denom, d.y / denom);
+                    vec2 v = c;
+                    v *= mat2(cos(log(length(v)) + t * 0.2 + vec4(0.0, 33.0, 11.0, 0.0))) * 5.0;
+                    vec4 animAccum = vec4(0.0);
+                    for (int i = 1; i <= 9; i++) {
+                        float fi = float(i);
+                        animAccum += sin(vec4(v.x, v.y, v.y, v.x)) + vec4(1.0);
+                        v += 0.7 * sin(vec2(v.y, v.x) * fi + t) / fi + 0.5;
+                    }
+                    vec4 animTerm = 1.0 - exp(-exp(c.x * vec4(0.6, -0.4, -1.0, 0.0))
+                                      / animAccum
+                                      / (0.1 + 0.1 * pow(length(sin(v / 0.3) * 0.2 + c * vec2(1.0, 2.0)) - 1.0, 2.0))
+                                      / (1.0 + 7.0 * exp(0.3 * c.y - dot(c, c)))
+                                      / (0.03 + abs(length(p_anim) - 0.7)) * 0.2);
+                    o_anim += animTerm;
+                }
+
+                // Blend
+                vec4 finalColor = mix(o_bg, o_anim, 0.5) * 1.5;
+                finalColor = clamp(finalColor, 0.0, 1.0);
+                
+                // Color grading
+                float lum = (finalColor.r + finalColor.g + finalColor.b) / 3.0;
+                
+                vec3 cyan = vec3(0.0, 1.0, 1.0);
+                vec3 purple = vec3(0.6, 0.2, 1.0);
+                vec3 magenta = vec3(1.0, 0.0, 0.8);
+                vec3 blue = vec3(0.2, 0.4, 1.0);
+                
+                float colorShift = sin(t * 0.3) * 0.5 + 0.5;
+                
+                vec3 innerColor = mix(cyan, vec3(1.0), lum * 0.5);
+                vec3 midColor = mix(purple, blue, colorShift);
+                vec3 outerColor = mix(magenta, purple, colorShift);
+                
+                vec3 gradientColor;
+                if (lum > 0.6) {
+                    gradientColor = innerColor;
+                } else if (lum > 0.3) {
+                    gradientColor = mix(midColor, innerColor, (lum - 0.3) / 0.3);
+                } else {
+                    gradientColor = mix(outerColor, midColor, lum / 0.3);
+                }
+                
+                finalColor.rgb = gradientColor * lum * 2.0;
+                finalColor = clamp(finalColor, 0.0, 1.0);
+                
+                gl_FragColor = finalColor;
+            }
+        `;
+
+        function createShader(type: number, source: string): WebGLShader | null {
+            const shader = gl!.createShader(type);
+            if (!shader) return null;
+            gl!.shaderSource(shader, source);
+            gl!.compileShader(shader);
+            if (!gl!.getShaderParameter(shader, gl!.COMPILE_STATUS)) {
+                console.error('Shader compile failed:', gl!.getShaderInfoLog(shader));
+                gl!.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        function createProgram(vs: string, fs: string): WebGLProgram | null {
+            const vertexShader = createShader(gl!.VERTEX_SHADER, vs);
+            const fragmentShader = createShader(gl!.FRAGMENT_SHADER, fs);
+            if (!vertexShader || !fragmentShader) return null;
+
+            const program = gl!.createProgram();
+            if (!program) return null;
+            gl!.attachShader(program, vertexShader);
+            gl!.attachShader(program, fragmentShader);
+            gl!.linkProgram(program);
+            if (!gl!.getProgramParameter(program, gl!.LINK_STATUS)) {
+                console.error('Program failed to link:', gl!.getProgramInfoLog(program));
+                gl!.deleteProgram(program);
+                return null;
+            }
+            return program;
+        }
+
+        const program = createProgram(vsSource, fsSource);
+        if (!program) return;
+        gl.useProgram(program);
+
+        const positionLocation = gl.getAttribLocation(program, 'a_position');
+        const timeLocation = gl.getUniformLocation(program, 't');
+        const resolutionLocation = gl.getUniformLocation(program, 'r');
+        const scrollLocation = gl.getUniformLocation(program, 'scrollOffset');
+
+        const vertices = new Float32Array([
+            -1, -1, 1, -1, -1, 1,
+            -1, 1, 1, -1, 1, 1,
+        ]);
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(positionLocation);
+        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+        function resize() {
+            if (!canvas || !gl) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let scrollProgress = 0;
+        let targetScrollProgress = 0;
+        function handleScroll() {
+            const scrollY = window.scrollY;
+            const heroHeight = window.innerHeight;
+            targetScrollProgress = Math.min(scrollY / heroHeight, 1);
+        }
+        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+
+        const startTime = performance.now();
+        let animationId: number;
+
+        function render() {
+            animationId = requestAnimationFrame(render);
+            const currentTime = performance.now();
+            const delta = (currentTime - startTime) / 1000;
+
+            scrollProgress += (targetScrollProgress - scrollProgress) * 0.03;
+            const offset = 0.7 * (1 - scrollProgress);
+
+            gl!.uniform1f(timeLocation, delta);
+            gl!.uniform2f(resolutionLocation, canvas!.width, canvas!.height);
+            gl!.uniform1f(scrollLocation, offset);
+            gl!.drawArrays(gl!.TRIANGLES, 0, 6);
+        }
+        animationId = requestAnimationFrame(render);
+
+        return () => {
+            window.removeEventListener('resize', resize);
+            window.removeEventListener('scroll', handleScroll);
+            cancelAnimationFrame(animationId);
+            gl!.deleteProgram(program);
+            gl!.deleteBuffer(buffer);
+        };
+    }, []);
+
+    return (
+        <>
+            {/* Interactive Stars Universe - Bottom Layer */}
+            <canvas
+                ref={starsRef}
+                className="fixed top-0 left-0 w-full h-full -z-20"
+                style={{ background: '#000', pointerEvents: 'none' }}
+            />
+            {/* Black Hole Effect - with smooth blur intro */}
+            <canvas
+                ref={canvasRef}
+                className="fixed top-0 left-0 w-full h-full -z-10"
+                style={{
+                    background: 'transparent',
+                    pointerEvents: 'none',
+                    filter: `blur(${blurAmount}px)`,
+                }}
+            />
+        </>
+    );
+}

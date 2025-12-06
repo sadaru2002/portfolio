@@ -1,0 +1,175 @@
+'use client';
+
+import { motion } from 'framer-motion';
+
+interface HeroProps {
+  contentVisible?: boolean;
+}
+
+export default function Hero({ contentVisible = true }: HeroProps) {
+  // Base delay for staggered animations (after black hole moves to position)
+  const baseDelay = contentVisible ? 0 : 10; // Large delay to prevent showing before contentVisible
+
+  return (
+    <section id="home" className="relative min-h-screen flex items-center z-10">
+      {/* Left side - Text Content */}
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={{
+          opacity: contentVisible ? 1 : 0,
+          x: contentVisible ? 0 : -50
+        }}
+        transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        className="w-1/2 pl-12 md:pl-20 pr-6"
+      >
+        {/* Main headline with name */}
+        <motion.h1
+          className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.95] mb-6 tracking-tight"
+          style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{
+            opacity: contentVisible ? 1 : 0,
+            y: contentVisible ? 0 : 50
+          }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <motion.span
+            className="block text-white"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{
+              opacity: contentVisible ? 1 : 0,
+              y: contentVisible ? 0 : 30
+            }}
+            transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            I'M
+          </motion.span>
+          <motion.span
+            className="block"
+            style={{ color: '#00F0FF' }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{
+              opacity: contentVisible ? 1 : 0,
+              y: contentVisible ? 0 : 30
+            }}
+            transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            THILINA
+          </motion.span>
+          <motion.span
+            className="block"
+            style={{ color: '#00F0FF' }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{
+              opacity: contentVisible ? 1 : 0,
+              y: contentVisible ? 0 : 30
+            }}
+            transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            SANDARUWAN.
+          </motion.span>
+        </motion.h1>
+
+        {/* Developer & Creative Thinker tagline */}
+        <motion.div
+          className="flex items-center gap-3 mb-6"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{
+            opacity: contentVisible ? 1 : 0,
+            x: contentVisible ? 0 : -20
+          }}
+          transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div
+            className="w-3 h-3 rounded-full animate-pulse"
+            style={{ backgroundColor: '#00F0FF' }}
+          />
+          <span className="text-gray-300 text-sm md:text-base tracking-widest font-mono uppercase">
+            Developer // Creative Thinker
+          </span>
+        </motion.div>
+
+        {/* Description */}
+        <motion.p
+          className="text-base md:text-lg text-gray-400 mb-8 max-w-md leading-relaxed"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: contentVisible ? 1 : 0,
+            y: contentVisible ? 0 : 20
+          }}
+          transition={{ duration: 0.8, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        >
+          Crafting immersive digital experiences where code meets creativity.
+          Building the future, one pixel at a time.
+        </motion.p>
+
+        {/* CTA Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: contentVisible ? 1 : 0,
+            y: contentVisible ? 0 : 20
+          }}
+          transition={{ duration: 0.8, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <a
+            href="/cv.pdf"
+            target="_blank"
+            className="inline-flex items-center gap-2 px-8 py-4 text-black font-bold rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/30"
+            style={{ backgroundColor: '#00F0FF' }}
+          >
+            DOWNLOAD CV
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
+            </svg>
+          </a>
+        </motion.div>
+      </motion.div>
+
+      {/* Right side - Space for Black Hole */}
+      <div className="w-1/2 h-full" />
+
+      {/* Scroll Indicator */}
+      <motion.div
+        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{
+          opacity: contentVisible ? 1 : 0,
+          y: contentVisible ? 0 : 20
+        }}
+        transition={{ duration: 0.8, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: contentVisible ? 1.5 : 0
+          }}
+          className="flex flex-col items-center gap-2"
+        >
+          <span className="text-gray-500 text-xs tracking-widest uppercase">Scroll</span>
+          <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center pt-2">
+            <motion.div
+              className="w-1.5 h-3 rounded-full"
+              style={{ backgroundColor: '#00F0FF' }}
+              animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </div>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
