@@ -67,7 +67,13 @@ export default function Navbar() {
   // Scroll spy effect
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 200; // Smaller offset for better accuracy
+      // If at very top, always show Home
+      if (window.scrollY < 100) {
+        setActiveIndex(0);
+        return;
+      }
+
+      const scrollPosition = window.scrollY + 200;
 
       // Get section positions and find current one
       let currentIndex = 0;
@@ -83,7 +89,9 @@ export default function Navbar() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial check
+
+    // Delay initial check to ensure page is loaded
+    setTimeout(handleScroll, 100);
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
