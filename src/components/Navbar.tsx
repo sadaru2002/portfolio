@@ -35,6 +35,17 @@ const navItems: NavItem[] = [
     )
   },
   {
+    label: 'Skills',
+    href: '#skills',
+    sectionId: 'skills',
+    icon: (
+      <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
+        <path fill="currentColor" d="M18 8a2 2 0 100-4 2 2 0 000 4zM18 32a2 2 0 100-4 2 2 0 000 4zM8 18a2 2 0 100-4 2 2 0 000 4zM28 18a2 2 0 100-4 2 2 0 000 4zM10.9 10.9a2 2 0 100-4 2 2 0 000 4zM25.1 25.1a2 2 0 100-4 2 2 0 000 4zM10.9 25.1a2 2 0 100-4 2 2 0 000 4zM25.1 10.9a2 2 0 100-4 2 2 0 000 4z" />
+        <circle cx="18" cy="18" r="6" stroke="currentColor" strokeWidth="2" fill="none" />
+      </svg>
+    )
+  },
+  {
     label: 'About',
     href: '#about',
     sectionId: 'about',
@@ -58,7 +69,7 @@ const navItems: NavItem[] = [
   }
 ];
 
-const ITEM_WIDTH = 90;
+const ITEM_WIDTH = 78; // Smaller to fit 5 items
 const NAV_PADDING = 8;
 
 export default function Navbar() {
