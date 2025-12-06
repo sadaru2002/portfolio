@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 interface NavItem {
   label: string;
   href: string;
+  sectionId: string;
   icon: React.ReactNode;
 }
 
@@ -14,6 +15,7 @@ const navItems: NavItem[] = [
   {
     label: 'Home',
     href: '#home',
+    sectionId: 'home',
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
         <path fill="currentColor" d="M18 6l12 10v14H6V16L18 6zm0 2.5L8 16.5V28h20V16.5L18 8.5z" />
@@ -24,6 +26,7 @@ const navItems: NavItem[] = [
   {
     label: 'Work',
     href: '#portfolio',
+    sectionId: 'portfolio',
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
         <rect fill="currentColor" x="6" y="10" width="24" height="18" rx="2" />
@@ -34,6 +37,7 @@ const navItems: NavItem[] = [
   {
     label: 'About',
     href: '#about',
+    sectionId: 'about',
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
         <circle fill="currentColor" cx="18" cy="12" r="5" />
@@ -44,6 +48,7 @@ const navItems: NavItem[] = [
   {
     label: 'Contact',
     href: '#contact',
+    sectionId: 'contact',
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
         <rect fill="currentColor" x="6" y="9" width="24" height="18" rx="2" />
@@ -58,6 +63,35 @@ const NAV_PADDING = 8;
 
 export default function Navbar() {
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Scroll spy effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight / 3;
+
+      // Check each section from bottom to top
+      for (let i = navItems.length - 1; i >= 0; i--) {
+        const section = document.getElementById(navItems[i].sectionId);
+        if (section) {
+          const sectionTop = section.offsetTop;
+          if (scrollPosition >= sectionTop) {
+            setActiveIndex(i);
+            break;
+          }
+        }
+      }
+
+      // If at the very top, set to Home
+      if (window.scrollY < 100) {
+        setActiveIndex(0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial check
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <motion.nav
