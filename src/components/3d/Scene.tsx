@@ -11,11 +11,11 @@ export default function Scene({ introComplete = false }: SceneProps) {
     const starsRef = useRef<HTMLCanvasElement>(null);
     const [visible, setVisible] = useState(false);
 
-    // Simple fade in after intro - much faster than blur
+    // Simple fade in after intro - immediate
     useEffect(() => {
         if (introComplete) {
-            const timer = setTimeout(() => setVisible(true), 100);
-            return () => clearTimeout(timer);
+            // Use RAF for smoother transition start
+            requestAnimationFrame(() => setVisible(true));
         }
     }, [introComplete]);
 
@@ -24,12 +24,17 @@ export default function Scene({ introComplete = false }: SceneProps) {
         const canvas = starsRef.current;
         if (!canvas) return;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { alpha: false });
         if (!ctx) return;
 
         let mouseX = 0;
         let mouseY = 0;
+        let targetMouseX = 0;
+        let targetMouseY = 0;
         let animationId: number;
+        let lastFrameTime = 0;
+        const targetFPS = 60;
+        const frameInterval = 1000 / targetFPS;
 
         interface Star {
             x: number;
@@ -42,7 +47,7 @@ export default function Scene({ introComplete = false }: SceneProps) {
         }
 
         const stars: Star[] = [];
-        const numStars = 100; // Reduced for better performance
+        const numStars = 80; // Reduced for better performance
         const colors = [
             'rgba(255, 255, 255, ',
             'rgba(200, 220, 255, ',
@@ -64,19 +69,25 @@ export default function Scene({ introComplete = false }: SceneProps) {
         }
 
         function resize() {
-            if (!canvas) return;
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            if (!canvas || !ctx) return;
+            const dpr = Math.min(window.devicePixelRatio, 2); // Limit DPR for performance
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            ctx.scale(dpr, dpr);
             initStars();
         }
 
         function handleMouseMove(e: MouseEvent) {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+            targetMouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            targetMouseY = (e.clientY / window.innerHeight - 0.5) * 2;
         }
 
         function drawStars(time: number) {
             if (!ctx || !canvas) return;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
 
             stars.forEach(star => {
                 const parallaxX = mouseX * star.z * 8;
@@ -85,10 +96,10 @@ export default function Scene({ introComplete = false }: SceneProps) {
                 const x = star.x + parallaxX;
                 const y = star.y + parallaxY;
 
-                const wrappedX = ((x % canvas.width) + canvas.width) % canvas.width;
-                const wrappedY = ((y % canvas.height) + canvas.height) % canvas.height;
+                const wrappedX = ((x % width) + width) % width;
+                const wrappedY = ((y % height) + height) % height;
 
-                const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset) * 0.2 + 0.8;
+                const twinkle = Math.sin(time * star.twinkleSpeed * 0.001 + star.twinkleOffset) * 0.2 + 0.8;
                 const opacity = twinkle * (0.15 + star.z * 0.15);
 
                 ctx.beginPath();
@@ -98,19 +109,28 @@ export default function Scene({ introComplete = false }: SceneProps) {
             });
         }
 
-        function animate() {
-            if (!ctx || !canvas) return;
-            const time = performance.now();
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawStars(time);
+        function animate(currentTime: number) {
             animationId = requestAnimationFrame(animate);
+            
+            // Frame throttling
+            const deltaTime = currentTime - lastFrameTime;
+            if (deltaTime < frameInterval) return;
+            lastFrameTime = currentTime - (deltaTime % frameInterval);
+            
+            // Smooth mouse interpolation
+            mouseX += (targetMouseX - mouseX) * 0.08;
+            mouseY += (targetMouseY - mouseY) * 0.08;
+            
+            if (!ctx || !canvas) return;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+            drawStars(currentTime);
         }
 
-        window.addEventListener('resize', resize);
-        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('resize', resize, { passive: true });
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
         resize();
-        animate();
+        animationId = requestAnimationFrame(animate);
 
         return () => {
             window.removeEventListener('resize', resize);
@@ -119,25 +139,34 @@ export default function Scene({ introComplete = false }: SceneProps) {
         };
     }, []);
 
-    // Main black hole shader - original position (right side)
+    // Main black hole shader - deferred for smoother loading
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        const gl = canvas.getContext('webgl');
-        if (!gl) {
-            console.error("WebGL not supported");
-            return;
-        }
+        let animationId: number;
+        let cleanupFn: (() => void) | null = null;
 
-        const vsSource = `
-            attribute vec2 a_position;
-            void main() {
-                gl_Position = vec4(a_position, 0.0, 1.0);
+        // Defer WebGL init slightly for smoother loading screen
+        const initTimeout = requestAnimationFrame(() => {
+            const gl = canvas.getContext('webgl', {
+                alpha: true,
+                antialias: false,
+                powerPreference: 'high-performance',
+            });
+            if (!gl) {
+                console.error("WebGL not supported");
+                return;
             }
-        `;
 
-        // Simplified shader for better performance
+            const vsSource = `
+                attribute vec2 a_position;
+                void main() {
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                }
+            `;
+
+            // Simplified shader for better performance
         const fsSource = `
             precision mediump float;
             uniform float t;
@@ -278,11 +307,14 @@ export default function Scene({ introComplete = false }: SceneProps) {
 
         function resize() {
             if (!canvas || !gl) return;
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            const dpr = Math.min(window.devicePixelRatio, 1.5); // Limit for performance
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         }
-        window.addEventListener('resize', resize);
+        window.addEventListener('resize', resize, { passive: true });
         resize();
 
         // Start with correct offset (black hole on right)
@@ -294,21 +326,29 @@ export default function Scene({ introComplete = false }: SceneProps) {
             const heroHeight = window.innerHeight;
             targetScrollProgress = Math.min(scrollY / heroHeight, 1);
         }
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         handleScroll();
         // Initialize to current scroll position immediately
         scrollProgress = targetScrollProgress;
 
         const startTime = performance.now();
         let animationId: number;
+        let lastRenderTime = 0;
+        const targetFPS = 60;
+        const renderInterval = 1000 / targetFPS;
 
-        function render() {
+        function render(currentTime: number) {
             animationId = requestAnimationFrame(render);
-            const currentTime = performance.now();
+            
+            // Frame throttling for consistent performance
+            const deltaTime = currentTime - lastRenderTime;
+            if (deltaTime < renderInterval) return;
+            lastRenderTime = currentTime - (deltaTime % renderInterval);
+            
             const delta = (currentTime - startTime) / 1000;
 
-            // Smooth scroll interpolation
-            scrollProgress += (targetScrollProgress - scrollProgress) * 0.05;
+            // Smoother scroll interpolation
+            scrollProgress += (targetScrollProgress - scrollProgress) * 0.08;
             // Black hole on right side (offset 0.7 when at top)
             const offset = 0.7 * (1 - scrollProgress);
 
@@ -319,12 +359,19 @@ export default function Scene({ introComplete = false }: SceneProps) {
         }
         animationId = requestAnimationFrame(render);
 
-        return () => {
+        // Store cleanup function
+        cleanupFn = () => {
             window.removeEventListener('resize', resize);
             window.removeEventListener('scroll', handleScroll);
             cancelAnimationFrame(animationId);
-            gl!.deleteProgram(program);
-            gl!.deleteBuffer(buffer);
+            gl.deleteProgram(program);
+            gl.deleteBuffer(buffer);
+        };
+        }); // End of requestAnimationFrame callback
+
+        return () => {
+            cancelAnimationFrame(initTimeout);
+            if (cleanupFn) cleanupFn();
         };
     }, []);
 
@@ -334,7 +381,12 @@ export default function Scene({ introComplete = false }: SceneProps) {
             <canvas
                 ref={starsRef}
                 className="fixed top-0 left-0 w-full h-full -z-20"
-                style={{ background: '#000', pointerEvents: 'none' }}
+                style={{ 
+                    background: '#000', 
+                    pointerEvents: 'none',
+                    willChange: 'transform',
+                    transform: 'translate3d(0, 0, 0)',
+                }}
             />
             {/* Black Hole Effect - simple opacity fade instead of blur */}
             <canvas
@@ -344,7 +396,9 @@ export default function Scene({ introComplete = false }: SceneProps) {
                     background: 'transparent',
                     pointerEvents: 'none',
                     opacity: visible ? 1 : 0,
-                    transition: 'opacity 1s ease-out',
+                    transition: 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)',
+                    willChange: 'opacity, transform',
+                    transform: 'translate3d(0, 0, 0)',
                 }}
             />
         </>

@@ -123,7 +123,14 @@ export default function Robot3D({ onChatOpen, isChatOpen = false }: Robot3DProps
 
             <Canvas
                 camera={{ position: [0, 0, 5], fov: 45 }}
-                gl={{ alpha: true, antialias: true }}
+                gl={{ 
+                    alpha: true, 
+                    antialias: false, // Disable for performance
+                    powerPreference: 'high-performance',
+                    failIfMajorPerformanceCaveat: false,
+                }}
+                dpr={[1, 1.5]} // Limit device pixel ratio
+                performance={{ min: 0.5 }} // Allow frame rate to drop for performance
                 style={{ background: 'transparent', pointerEvents: 'auto' }}
             >
                 <ambientLight intensity={0.8} />

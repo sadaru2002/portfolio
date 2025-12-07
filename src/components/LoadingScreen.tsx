@@ -14,16 +14,16 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
         if (hasRun.current) return;
         hasRun.current = true;
 
-        // Phase 1: Hello animation (3 seconds)
+        // Phase 1: Hello animation (2.5 seconds - slightly faster)
         const helloTimer = setTimeout(() => {
             setPhase('blur');
-        }, 3000);
+        }, 2500);
 
-        // Phase 2: Blur overlay (1 second) - content loads behind
+        // Phase 2: Blur overlay (0.5 second) - faster transition
         const blurTimer = setTimeout(() => {
             setPhase('done');
             onLoadingComplete();
-        }, 4000);
+        }, 3000);
 
         return () => {
             clearTimeout(helloTimer);
@@ -41,10 +41,13 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
                 backdropFilter: phase === 'blur' ? 'blur(20px)' : 'none',
                 WebkitBackdropFilter: phase === 'blur' ? 'blur(20px)' : 'none',
                 opacity: phase === 'blur' ? 0 : 1,
-                transition: 'opacity 0.8s ease-out',
+                transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
                 pointerEvents: 'none',
-                willChange: 'opacity',
-                transform: 'translateZ(0)', // Force GPU layer
+                willChange: 'opacity, backdrop-filter',
+                transform: 'translate3d(0, 0, 0)', // Force GPU layer
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                perspective: 1000,
             }}
         >
             {phase === 'hello' && (
@@ -76,8 +79,10 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
                                 strokeWidth: '35px',
                                 strokeDasharray: '5800px',
                                 strokeDashoffset: '5800px',
-                                animation: 'drawHello 3s linear forwards',
-                                filter: 'drop-shadow(0 0 30px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.5))'
+                                animation: 'drawHello 2.5s linear forwards',
+                                filter: 'drop-shadow(0 0 30px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.5))',
+                                willChange: 'stroke-dashoffset',
+                                transform: 'translate3d(0, 0, 0)',
                             }}
                         >
                             <defs>
@@ -103,6 +108,10 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
                                 0% { stroke-dashoffset: 5800; }
                                 100% { stroke-dashoffset: 0; }
                             }
+                            .loading-container * {
+                                -webkit-font-smoothing: antialiased;
+                                -moz-osx-font-smoothing: grayscale;
+                            }
                         `}
                     </style>
                 </>
@@ -112,10 +121,12 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
                 <div
                     className="absolute inset-0"
                     style={{
-                        background: 'rgba(0, 0, 0, 0.3)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        animation: 'fadeOut 1s ease-out forwards'
+                        background: 'rgba(0, 0, 0, 0.2)',
+                        backdropFilter: 'blur(15px)',
+                        WebkitBackdropFilter: 'blur(15px)',
+                        animation: 'fadeOut 0.5s ease-out forwards',
+                        willChange: 'opacity',
+                        transform: 'translate3d(0, 0, 0)',
                     }}
                 />
             )}

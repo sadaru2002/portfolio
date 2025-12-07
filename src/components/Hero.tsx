@@ -2,14 +2,29 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useMemo } from 'react';
 
 interface HeroProps {
   contentVisible?: boolean;
 }
 
+// Memoized transition config for performance
+const smoothTransition = {
+  duration: 0.8,
+  ease: [0.25, 0.46, 0.45, 0.94] as const, // Smooth cubic-bezier
+};
+
 export default function Hero({ contentVisible = true }: HeroProps) {
-  // Base delay for staggered animations (after black hole moves to position)
-  const baseDelay = contentVisible ? 0 : 10; // Large delay to prevent showing before contentVisible
+  // Memoize animation variants to prevent recreation on each render
+  const fadeInUp = useMemo(() => ({
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0 }
+  }), []);
+
+  const fadeInLeft = useMemo(() => ({
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0 }
+  }), []);
 
   return (
     <section id="home" className="relative min-h-screen flex items-center z-10">
@@ -20,14 +35,16 @@ export default function Hero({ contentVisible = true }: HeroProps) {
           opacity: contentVisible ? 1 : 0,
           y: contentVisible ? 0 : -20
         }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-        whileHover={{ scale: 1.1, transition: { duration: 0.3 } }}
+        transition={{ ...smoothTransition, delay: 0.4 }}
+        whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
         className="absolute top-6 left-12 md:left-20 z-[100] cursor-pointer"
+        style={{ willChange: 'transform, opacity' }}
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
         <motion.div
           animate={{ y: [0, -5, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          style={{ willChange: 'transform' }}
         >
           <Image src="/LOGO.png" alt="Logo" width={76} height={76} priority />
         </motion.div>
@@ -39,8 +56,9 @@ export default function Hero({ contentVisible = true }: HeroProps) {
           opacity: contentVisible ? 1 : 0,
           x: contentVisible ? 0 : -50
         }}
-        transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ ...smoothTransition, delay: 0.1 }}
         className="w-1/2 pl-12 md:pl-20 pr-6"
+        style={{ willChange: contentVisible ? 'auto' : 'transform, opacity' }}
       >
         {/* Main headline with name */}
         <motion.h1
@@ -51,7 +69,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             y: contentVisible ? 0 : 50
           }}
-          transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ ...smoothTransition, delay: 0.2 }}
         >
           <motion.span
             className="block text-white"
@@ -60,7 +78,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
               opacity: contentVisible ? 1 : 0,
               y: contentVisible ? 0 : 30
             }}
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ ...smoothTransition, delay: 0.3 }}
           >
             I'M
           </motion.span>
@@ -72,7 +90,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
               opacity: contentVisible ? 1 : 0,
               y: contentVisible ? 0 : 30
             }}
-            transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ ...smoothTransition, delay: 0.4 }}
           >
             THILINA
           </motion.span>
@@ -84,7 +102,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
               opacity: contentVisible ? 1 : 0,
               y: contentVisible ? 0 : 30
             }}
-            transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ ...smoothTransition, delay: 0.5 }}
           >
             SANDARUWAN.
           </motion.span>
@@ -98,7 +116,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             x: contentVisible ? 0 : -20
           }}
-          transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ ...smoothTransition, delay: 0.6 }}
         >
           <div
             className="w-3 h-3 rounded-full animate-pulse"
@@ -117,7 +135,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             y: contentVisible ? 0 : 20
           }}
-          transition={{ duration: 0.8, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ ...smoothTransition, delay: 0.7 }}
         >
           Crafting immersive digital experiences where code meets creativity.
           Building the future, one pixel at a time.
@@ -130,7 +148,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             y: contentVisible ? 0 : 20
           }}
-          transition={{ duration: 0.8, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ ...smoothTransition, delay: 0.8 }}
         >
           <a
             href="/cv.pdf"
@@ -167,7 +185,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
           opacity: contentVisible ? 1 : 0,
           y: contentVisible ? 0 : 20
         }}
-        transition={{ duration: 0.8, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ ...smoothTransition, delay: 0.9 }}
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
@@ -175,9 +193,10 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             duration: 1.5,
             repeat: Infinity,
             ease: 'easeInOut',
-            delay: contentVisible ? 1.5 : 0
+            delay: contentVisible ? 1.2 : 0
           }}
           className="flex flex-col items-center gap-2"
+          style={{ willChange: 'transform' }}
         >
           <span className="text-gray-500 text-xs tracking-widest uppercase">Scroll</span>
           <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center pt-2">
