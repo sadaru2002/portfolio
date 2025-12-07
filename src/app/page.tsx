@@ -9,6 +9,7 @@ import TechStack from '@/components/TechStack';
 import About from '@/components/About';
 import Contact from '@/components/Contact';
 import LoadingScreen from '@/components/LoadingScreen';
+import ChatBot from '@/components/ChatBot';
 
 // Load 3D components on client only
 const Scene = dynamic(() => import('@/components/3d/Scene'), {
@@ -22,6 +23,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [introComplete, setIntroComplete] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const hasCompleted = useRef(false);
 
   const handleLoadingComplete = useCallback(() => {
@@ -67,8 +69,11 @@ export default function Home() {
           transition: 'opacity 1s ease-out',
           transitionDelay: '0.5s'
         }}>
-          <Robot3D />
+          <Robot3D onChatOpen={() => setIsChatOpen(true)} isChatOpen={isChatOpen} />
         </div>
+
+        {/* ChatBot - opens when clicking robot */}
+        <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
 
         {/* Navbar fades in smoothly - FIXED position */}
         <div style={{

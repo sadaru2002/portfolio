@@ -231,7 +231,7 @@ export default function TechStack() {
             >
                 {/* First row */}
                 <div className="mb-4">
-                    <Marquee pauseOnHover duration="40s">
+                    <Marquee pauseOnHover speed={35}>
                         {marqueeRow1.map((tech) => (
                             <TechCard key={tech.name} tech={tech} />
                         ))}
@@ -240,7 +240,7 @@ export default function TechStack() {
 
                 {/* Second row */}
                 <div>
-                    <Marquee reverse pauseOnHover duration="45s">
+                    <Marquee reverse pauseOnHover speed={40}>
                         {marqueeRow2.map((tech) => (
                             <TechCard key={tech.name} tech={tech} />
                         ))}
@@ -269,6 +269,83 @@ export default function TechStack() {
                         {skill}
                     </span>
                 ))}
+            </motion.div>
+
+            {/* Professional Certifications Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="mt-20 max-w-6xl mx-auto"
+            >
+                <div className="text-center mb-10">
+                    <span
+                        className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider mb-4"
+                        style={{
+                            background: 'linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
+                            border: '1px solid rgba(0, 240, 255, 0.3)',
+                            color: '#00f0ff'
+                        }}
+                    >
+                        ✦ Verified Credentials
+                    </span>
+                    <h3 className="text-3xl md:text-4xl font-bold text-white">
+                        Professional{' '}
+                        <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                            Certifications
+                        </span>
+                    </h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
+                    {[
+                        { title: "Back-End Apps with Node.js & Express", issuer: "IBM", color: "#00f0ff", href: "https://www.coursera.org/account/accomplishments/records/37MN17QKX34E", img: "/cert-1.png" },
+                        { title: "React: Creating and Hosting a Full-Stack Site", issuer: "SkillUp", color: "#8b5cf6", href: "https://www.coursera.org/account/accomplishments/records/BXB9N2XQMXZ3", img: "/cert-2.png" },
+                        { title: "Introduction to Artificial Intelligence", issuer: "SkillUp", color: "#ec4899", href: "#", img: "/cert-3.png" },
+                        { title: "Oracle Cloud Infrastructure Foundations", issuer: "Oracle", color: "#fb923c", href: "#", img: "/cert-4.png" }
+                    ].map((cert, i) => (
+                        <motion.a
+                            key={i}
+                            href={cert.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ y: -8, scale: 1.02 }}
+                            transition={{ duration: 0.3 }}
+                            className="group relative rounded-2xl overflow-hidden cursor-pointer"
+                            style={{
+                                background: 'linear-gradient(180deg, rgba(5, 15, 30, 0.9) 0%, rgba(2, 8, 20, 0.95) 100%)',
+                                backdropFilter: 'blur(5px)',
+                                border: `1px solid ${cert.color}33`,
+                                boxShadow: '0 4px 24px rgba(0, 0, 0, 0.4)'
+                            }}
+                        >
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                style={{ background: `radial-gradient(circle at 50% 0%, ${cert.color}25, transparent 70%)` }}
+                            />
+                            <div className="relative h-40 overflow-hidden">
+                                <Image src={cert.img} alt={cert.title} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                                <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold"
+                                    style={{ background: 'rgba(0, 0, 0, 0.7)', color: cert.color, border: `1px solid ${cert.color}66` }}
+                                >
+                                    {cert.issuer}
+                                </div>
+                            </div>
+                            <div className="p-4 relative">
+                                <h5 className="text-white font-semibold text-sm leading-tight mb-2 group-hover:text-cyan-400 transition-colors line-clamp-2">
+                                    {cert.title}
+                                </h5>
+                                <div className="flex items-center gap-2 text-white/40 text-xs">
+                                    <svg className="w-4 h-4" style={{ color: cert.color }} fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>Verified</span>
+                                </div>
+                            </div>
+                        </motion.a>
+                    ))}
+                </div>
             </motion.div>
         </section>
     );

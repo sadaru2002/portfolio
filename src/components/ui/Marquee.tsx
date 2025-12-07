@@ -8,7 +8,7 @@ interface MarqueeProps {
     reverse?: boolean;
     pauseOnHover?: boolean;
     children: ReactNode;
-    duration?: string;
+    speed?: number;
 }
 
 export function Marquee({
@@ -16,40 +16,59 @@ export function Marquee({
     reverse = false,
     pauseOnHover = true,
     children,
-    duration = '30s',
+    speed = 40,
 }: MarqueeProps) {
     return (
         <div
             className={cn(
-                'group flex overflow-hidden',
+                'marquee-wrapper overflow-hidden w-full',
+                pauseOnHover && 'hover-pause',
                 className
             )}
-            style={{
-                '--duration': duration,
-                gap: '1.5rem'
-            } as React.CSSProperties}
         >
             <div
                 className={cn(
-                    'flex shrink-0 items-center animate-marquee',
-                    pauseOnHover && 'group-hover:[animation-play-state:paused]',
-                    reverse && '[animation-direction:reverse]'
+                    'marquee-inner flex whitespace-nowrap',
+                    reverse ? 'animate-marquee-reverse' : 'animate-marquee-forward'
                 )}
-                style={{ gap: '1.5rem' }}
+                style={{ '--speed': `${speed}s` } as React.CSSProperties}
             >
-                {children}
+                <div className="flex items-center gap-6 shrink-0 pr-6">
+                    {children}
+                </div>
+                <div className="flex items-center gap-6 shrink-0 pr-6" aria-hidden="true">
+                    {children}
+                </div>
             </div>
-            <div
-                className={cn(
-                    'flex shrink-0 items-center animate-marquee',
-                    pauseOnHover && 'group-hover:[animation-play-state:paused]',
-                    reverse && '[animation-direction:reverse]'
-                )}
-                style={{ gap: '1.5rem' }}
-                aria-hidden="true"
-            >
-                {children}
-            </div>
+
+            <style>{`
+                .marquee-wrapper {
+                    -webkit-mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
+                    mask: linear-gradient(90deg, transparent, white 5%, white 95%, transparent);
+                }
+                
+                .animate-marquee-forward {
+                    animation: marquee-scroll var(--speed, 40s) linear infinite;
+                }
+                
+                .animate-marquee-reverse {
+                    animation: marquee-scroll-reverse var(--speed, 40s) linear infinite;
+                }
+                
+                .hover-pause:hover .marquee-inner {
+                    animation-play-state: paused;
+                }
+                
+                @keyframes marquee-scroll {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                
+                @keyframes marquee-scroll-reverse {
+                    0% { transform: translateX(-50%); }
+                    100% { transform: translateX(0); }
+                }
+            `}</style>
         </div>
     );
 }

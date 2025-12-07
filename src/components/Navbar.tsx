@@ -1,12 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 interface NavItem {
   label: string;
-  href: string;
   sectionId: string;
   icon: React.ReactNode;
 }
@@ -14,7 +12,6 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     label: 'Home',
-    href: '#home',
     sectionId: 'home',
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
@@ -25,7 +22,6 @@ const navItems: NavItem[] = [
   },
   {
     label: 'Work',
-    href: '#portfolio',
     sectionId: 'portfolio',
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
@@ -36,7 +32,6 @@ const navItems: NavItem[] = [
   },
   {
     label: 'Skills',
-    href: '#skills',
     sectionId: 'skills',
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
@@ -47,7 +42,6 @@ const navItems: NavItem[] = [
   },
   {
     label: 'About',
-    href: '#about',
     sectionId: 'about',
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
@@ -58,7 +52,6 @@ const navItems: NavItem[] = [
   },
   {
     label: 'Contact',
-    href: '#contact',
     sectionId: 'contact',
     icon: (
       <svg viewBox="0 0 36 36" fill="none" className="w-5 h-5">
@@ -69,43 +62,71 @@ const navItems: NavItem[] = [
   }
 ];
 
-const ITEM_WIDTH = 78; // Smaller to fit 5 items
+const ITEM_WIDTH = 78;
 const NAV_PADDING = 8;
 
 export default function Navbar() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const isClickScrolling = useRef(false);
 
-  // Scroll spy effect
+  // Scroll spy using getBoundingClientRect for accurate detection
   useEffect(() => {
     const handleScroll = () => {
-      // If at very top, always show Home
+      if (isClickScrolling.current) return;
+
+      const windowHeight = window.innerHeight;
+
       if (window.scrollY < 100) {
         setActiveIndex(0);
         return;
       }
 
-      const scrollPosition = window.scrollY + 200;
-
-      // Get section positions and find current one
-      let currentIndex = 0;
+      let bestMatch = 0;
+      let bestVisibility = 0;
 
       for (let i = 0; i < navItems.length; i++) {
         const section = document.getElementById(navItems[i].sectionId);
-        if (section && scrollPosition >= section.offsetTop) {
-          currentIndex = i;
+        if (section) {
+          const rect = section.getBoundingClientRect();
+          const visibleTop = Math.max(0, rect.top);
+          const visibleBottom = Math.min(windowHeight, rect.bottom);
+          const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+          const visibility = visibleHeight / Math.min(rect.height, windowHeight);
+
+          if (rect.top >= -100 && rect.top < windowHeight / 2 && visibility > 0.1) {
+            bestMatch = i;
+            break;
+          }
+
+          if (visibility > bestVisibility) {
+            bestVisibility = visibility;
+            bestMatch = i;
+          }
         }
       }
 
-      setActiveIndex(currentIndex);
+      setActiveIndex(bestMatch);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Delay initial check to ensure page is loaded
-    setTimeout(handleScroll, 100);
+    setTimeout(handleScroll, 200);
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleClick = (index: number, sectionId: string) => {
+    isClickScrolling.current = true;
+    setActiveIndex(index);
+
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    setTimeout(() => {
+      isClickScrolling.current = false;
+    }, 1500);
+  };
 
   return (
     <motion.nav
@@ -118,76 +139,71 @@ export default function Navbar() {
         className="relative flex items-center rounded-full"
         style={{
           padding: `${NAV_PADDING}px`,
-          background: 'rgba(255, 255, 255, 0.08)',
+          background: 'linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%)',
           backdropFilter: 'blur(20px) saturate(180%)',
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           boxShadow: `
-            inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-            inset 1.5px 2px 0px -1px rgba(255, 255, 255, 0.25),
-            inset -1.5px -1.5px 0px -1px rgba(255, 255, 255, 0.15),
-            inset -2px -6px 2px -5px rgba(255, 255, 255, 0.1),
-            inset -0.5px -1px 3px 0px rgba(0, 0, 0, 0.15),
-            inset -1px 2px 3px -1px rgba(0, 0, 0, 0.2),
-            0px 1px 4px 0px rgba(0, 0, 0, 0.1),
-            0px 8px 24px 0px rgba(0, 0, 0, 0.15)
-          `
+            inset 0 1px 1px rgba(255, 255, 255, 0.3),
+            inset 0 -1px 1px rgba(0, 0, 0, 0.1),
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            0 2px 8px rgba(0, 0, 0, 0.2)
+          `,
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          transform: 'perspective(1000px) rotateX(2deg)',
+          transformStyle: 'preserve-3d'
         }}
       >
-        {/* Navigation Items */}
         <div className="flex items-center relative z-10">
           {navItems.map((item, index) => (
-            <Link
+            <button
               key={item.label}
-              href={item.href}
-              onClick={() => setActiveIndex(index)}
+              onClick={() => handleClick(index, item.sectionId)}
               className={`
                 flex flex-col items-center justify-center rounded-full
-                transition-all duration-200 no-underline
-                ${activeIndex === index
-                  ? 'text-white/90'
-                  : 'text-white/50 hover:text-cyan-400/90'
-                }
+                transition-all duration-300 cursor-pointer relative
+                ${activeIndex === index ? 'text-white' : 'text-white/50 hover:text-cyan-400'}
               `}
               style={{
                 width: `${ITEM_WIDTH}px`,
-                height: '64px'
+                height: '64px',
+                background: 'transparent',
+                border: 'none',
+                transform: activeIndex === index ? 'translateY(-2px) scale(1.05)' : 'translateY(0) scale(1)',
+                textShadow: activeIndex === index ? '0 0 10px rgba(0, 240, 255, 0.5)' : 'none'
               }}
             >
-              <div className={`transition-transform duration-200 ${activeIndex !== index ? 'hover:scale-110' : ''
-                }`}>
-                {/* Clone element to increase size */}
-                <div className="w-6 h-6">
-                  {item.icon}
-                </div>
+              <div
+                className="transition-all duration-300"
+                style={{
+                  transform: activeIndex === index ? 'scale(1.1)' : 'scale(1)',
+                  filter: activeIndex === index ? 'drop-shadow(0 0 6px rgba(0, 240, 255, 0.6))' : 'none'
+                }}
+              >
+                <div className="w-6 h-6">{item.icon}</div>
               </div>
-              <span className="text-xs font-medium mt-1.5 tracking-wide opacity-90">
-                {item.label}
-              </span>
-            </Link>
+              <span className="text-xs font-medium mt-1.5 tracking-wide">{item.label}</span>
+            </button>
           ))}
         </div>
 
-        {/* Sliding indicator */}
-        <div
-          className="absolute rounded-full z-0 transition-transform duration-400 ease-out"
+        {/* Smooth sliding indicator */}
+        <motion.div
+          className="absolute rounded-full z-0"
+          animate={{ x: activeIndex * ITEM_WIDTH }}
+          transition={{ type: "spring", stiffness: 150, damping: 20, mass: 0.8 }}
           style={{
             left: `${NAV_PADDING}px`,
             top: `${NAV_PADDING}px`,
             width: `${ITEM_WIDTH}px`,
             height: `calc(100% - ${NAV_PADDING * 2}px)`,
-            transform: `translateX(${activeIndex * ITEM_WIDTH}px)`,
-            background: 'rgba(255, 255, 255, 0.12)',
+            background: 'linear-gradient(180deg, rgba(0, 240, 255, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%)',
             boxShadow: `
-              inset 0 0 0 1px rgba(255, 255, 255, 0.15),
-              inset 1px 1px 0px -0.5px rgba(255, 255, 255, 0.3),
-              inset -1px -1px 0px -0.5px rgba(255, 255, 255, 0.2),
-              inset -1.5px -4px 2px -3px rgba(255, 255, 255, 0.15),
-              inset -0.5px 1.5px 2px -1px rgba(0, 0, 0, 0.2),
-              inset 0px -2.5px 1px -1.5px rgba(0, 0, 0, 0.1),
-              0px 2px 6px 0px rgba(0, 0, 0, 0.08)
+              inset 0 2px 4px rgba(255, 255, 255, 0.3),
+              inset 0 -2px 4px rgba(0, 0, 0, 0.15),
+              0 4px 12px rgba(0, 240, 255, 0.2),
+              0 0 20px rgba(0, 240, 255, 0.1)
             `,
-            transitionDuration: '400ms',
-            transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)'
+            border: '1px solid rgba(0, 240, 255, 0.3)'
           }}
         />
       </div>

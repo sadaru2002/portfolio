@@ -50,10 +50,16 @@ function RobotModel({ mousePosition, isHovering }: RobotModelProps) {
     );
 }
 
-export default function Robot3D() {
+interface Robot3DProps {
+    onChatOpen?: () => void;
+    isChatOpen?: boolean;
+}
+
+export default function Robot3D({ onChatOpen, isChatOpen = false }: Robot3DProps) {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
     const [showMessages, setShowMessages] = useState(false);
+    const [showContactMessage, setShowContactMessage] = useState(false);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -62,26 +68,39 @@ export default function Robot3D() {
             setMousePosition({ x, y });
         };
 
+        // Scroll detection for contact section
+        const handleScroll = () => {
+            const contactSection = document.getElementById('contact');
+            if (contactSection) {
+                const rect = contactSection.getBoundingClientRect();
+                const isInView = rect.top < window.innerHeight * 0.7 && rect.bottom > 0;
+                setShowContactMessage(isInView);
+            }
+        };
+
         window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('scroll', handleScroll, { passive: true });
 
         // Start showing messages after page has loaded (wait 3 seconds)
         const timer = setTimeout(() => setShowMessages(true), 3000);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('scroll', handleScroll);
             clearTimeout(timer);
         };
     }, []);
 
     return (
         <div
-            className="fixed -bottom-35 right-0 z-50"
+            className="fixed -bottom-35 right-0 z-50 cursor-pointer"
             style={{ width: '200px', height: '300px' }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
+            onClick={onChatOpen}
         >
-            {/* Messages - only render when showMessages is true */}
-            {showMessages && (
+            {/* Messages - only render when showMessages is true AND chat is NOT open AND not on contact section */}
+            {showMessages && !isChatOpen && !showContactMessage && (
                 <>
                     {/* Message 1 - shows 0-3s */}
                     <div className="robot-msg robot-msg-1">
@@ -93,6 +112,13 @@ export default function Robot3D() {
                         Scroll down to know more 🚀
                     </div>
                 </>
+            )}
+
+            {/* Contact section message - shows when user scrolls to contact AND chat is NOT open */}
+            {showContactMessage && !isChatOpen && (
+                <div className="robot-msg robot-msg-contact">
+                    If you have any questions, click me! 💬
+                </div>
             )}
 
             <Canvas
@@ -116,10 +142,10 @@ export default function Robot3D() {
                     bottom: 290px;
                     right: 10px;
                     padding: 12px 16px;
-                    background: linear-gradient(135deg, rgba(0, 20, 40, 0.95) 0%, rgba(0, 10, 30, 0.98) 100%);
-                    border: 1px solid rgba(0, 240, 255, 0.5);
+                    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+                    border: 1px solid rgba(0, 240, 255, 0.6);
                     border-radius: 16px 16px 4px 16px;
-                    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.2);
+                    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
                     max-width: 220px;
                     color: #fff;
                     font-size: 14px;
@@ -128,21 +154,41 @@ export default function Robot3D() {
                     opacity: 0;
                     pointer-events: none;
                     z-index: 100;
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
                 }
 
                 .robot-msg-1 {
-                    animation: showMsg 6s ease-out forwards;
+                    animation: showMsgGlow 6s ease-out forwards;
                 }
 
                 .robot-msg-2 {
-                    animation: showMsg 6s ease-out 7s forwards;
+                    animation: showMsgGlow 6s ease-out 7s forwards;
                 }
 
-                @keyframes showMsg {
-                    0% { opacity: 0; transform: scale(0.9) translateY(10px); }
-                    10% { opacity: 1; transform: scale(1) translateY(0); }
-                    90% { opacity: 1; transform: scale(1) translateY(0); }
-                    100% { opacity: 0; transform: scale(0.9) translateY(-10px); }
+                .robot-msg-contact {
+                    opacity: 1;
+                    pointer-events: auto;
+                    cursor: pointer;
+                    animation: pulseGlow 2s ease-in-out infinite;
+                }
+
+                .robot-msg-contact:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 4px 30px rgba(0, 240, 255, 0.5);
+                }
+
+                @keyframes showMsgGlow {
+                    0% { opacity: 0; transform: scale(0.9) translateY(10px); box-shadow: 0 4px 20px rgba(0, 240, 255, 0.1); }
+                    10% { opacity: 1; transform: scale(1) translateY(0); box-shadow: 0 4px 25px rgba(0, 240, 255, 0.4); }
+                    50% { box-shadow: 0 4px 30px rgba(0, 240, 255, 0.5); }
+                    90% { opacity: 1; transform: scale(1) translateY(0); box-shadow: 0 4px 25px rgba(0, 240, 255, 0.4); }
+                    100% { opacity: 0; transform: scale(0.9) translateY(-10px); box-shadow: 0 4px 20px rgba(0, 240, 255, 0.1); }
+                }
+
+                @keyframes pulseGlow {
+                    0%, 100% { box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3); }
+                    50% { box-shadow: 0 4px 30px rgba(0, 240, 255, 0.6); }
                 }
             `}</style>
         </div>

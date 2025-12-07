@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 interface HeroProps {
   contentVisible?: boolean;
@@ -12,6 +13,25 @@ export default function Hero({ contentVisible = true }: HeroProps) {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center z-10">
+      {/* Logo - positioned at top left of hero section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{
+          opacity: contentVisible ? 1 : 0,
+          y: contentVisible ? 0 : -20
+        }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+        whileHover={{ scale: 1.1, transition: { duration: 0.3 } }}
+        className="absolute top-6 left-12 md:left-20 z-[100] cursor-pointer"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      >
+        <motion.div
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Image src="/LOGO.png" alt="Logo" width={76} height={76} priority />
+        </motion.div>
+      </motion.div>
       {/* Left side - Text Content */}
       <motion.div
         initial={{ opacity: 0, x: -50 }}

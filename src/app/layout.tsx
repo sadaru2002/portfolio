@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Thilina Sandaruwan | Creative Developer",
   description: "Portfolio of Thilina Sandaruwan - Web Designer and Developer",
+  icons: {
+    icon: "/LOGO.png",
+    apple: "/LOGO.png",
+  },
 };
 
 export default function RootLayout({
@@ -25,6 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/LOGO.png" type="image/png" />
         <script
           type="module"
           dangerouslySetInnerHTML={{
