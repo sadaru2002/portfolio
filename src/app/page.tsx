@@ -16,11 +16,11 @@ const Scene = dynamic(() => import('@/components/3d/Scene'), {
   ssr: false,
   loading: () => <div className="fixed inset-0 bg-black -z-10" />
 });
-const TubesCursor = dynamic(() => import('@/components/3d/TubesCursor'), { 
+const TubesCursor = dynamic(() => import('@/components/3d/TubesCursor'), {
   ssr: false,
-  loading: () => null 
+  loading: () => null
 });
-const Robot3D = dynamic(() => import('@/components/3d/Robot3D'), { 
+const Robot3D = dynamic(() => import('@/components/3d/Robot3D'), {
   ssr: false,
   loading: () => null // Don't show anything while loading
 });
@@ -55,8 +55,8 @@ export default function Home() {
       {/* Scene ALWAYS renders - Black Hole background visible through all sections */}
       <Scene introComplete={introComplete} />
 
-      {/* Tubes cursor - renders after content is visible for smoother loading */}
-      {contentVisible && <TubesCursor />}
+      {/* Tubes cursor - DISABLED: causing WebGPU errors in Brave browser */}
+      {/* {contentVisible && <TubesCursor />} */}
 
       {/* Loading screen on top */}
       {isLoading && (
