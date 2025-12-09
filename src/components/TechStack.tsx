@@ -303,7 +303,7 @@ export default function TechStack() {
                         { title: "Back-End Apps with Node.js & Express", issuer: "IBM", color: "#00f0ff", href: "https://www.coursera.org/account/accomplishments/records/37MN17QKX34E", img: "/cert-1.png" },
                         { title: "Developing Front-End Apps with React", issuer: "IBM", color: "#8b5cf6", href: "https://www.coursera.org/account/accomplishments/records/BXB9N2XQMXZ3", img: "/cert-2.png" },
                         { title: "Machine Learning with Python", issuer: "IBM", color: "#ec4899", href: "https://www.coursera.org/account/accomplishments/records/BN5J3LCJ6WED", img: "/cert-3.png" },
-                        { title: "Oracle Cloud Infrastructure Foundations", issuer: "Oracle", color: "#fb923c", href: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=3F67FB56DBCB9318F975F2D70147FCA29CEF643E1309DC12B45600FEB27F33F5", img: "/cert-4.png" }
+                        { title: "Oracle Cloud Infrastructure Foundations", issuer: "Oracle", color: "#fb923c", href: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=3F67FB56DBCB9318F975F2D70147FCA29CEF643E1309DC12B45600FEB27F33F5", img: "/cert-4.png" },
                         { title: "AWS Cloud Technical Essentials", issuer: "AWS", color: "#00e800", href: "https://www.coursera.org/account/accomplishments/records/7BL4KITYIBMJ", img: "/cert-5.png" }
 
                     ].map((cert, i) => (
