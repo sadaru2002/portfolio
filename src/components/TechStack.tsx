@@ -298,55 +298,73 @@ export default function TechStack() {
                     </h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-                    {[
-                        { title: "Back-End Apps with Node.js & Express", issuer: "IBM", color: "#00f0ff", href: "https://www.coursera.org/account/accomplishments/records/37MN17QKX34E", img: "/cert-1.png" },
-                        { title: "Developing Front-End Apps with React", issuer: "IBM", color: "#8b5cf6", href: "https://www.coursera.org/account/accomplishments/records/BXB9N2XQMXZ3", img: "/cert-2.png" },
-                        { title: "Machine Learning with Python", issuer: "IBM", color: "#ec4899", href: "https://www.coursera.org/account/accomplishments/records/BN5J3LCJ6WED", img: "/cert-3.png" },
-                        { title: "Oracle Cloud Infrastructure Foundations", issuer: "Oracle", color: "#fb923c", href: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=3F67FB56DBCB9318F975F2D70147FCA29CEF643E1309DC12B45600FEB27F33F5", img: "/cert-4.png" },
-                        { title: "AWS Cloud Technical Essentials", issuer: "AWS", color: "#00e800", href: "https://www.coursera.org/account/accomplishments/records/7BL4KITYIBMJ", img: "/cert-5.png" }
+                <div className="relative px-4">
+                    {/* Horizontal Scroll Container */}
+                    <div
+                        className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide"
+                        style={{
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                            WebkitOverflowScrolling: 'touch'
+                        }}
+                    >
+                        {[
+                            { title: "Back-End Apps with Node.js & Express", issuer: "IBM", color: "#00f0ff", href: "https://www.coursera.org/account/accomplishments/records/37MN17QKX34E", img: "/cert-1.png" },
+                            { title: "Developing Front-End Apps with React", issuer: "IBM", color: "#8b5cf6", href: "https://www.coursera.org/account/accomplishments/records/BXB9N2XQMXZ3", img: "/cert-2.png" },
+                            { title: "Machine Learning with Python", issuer: "IBM", color: "#ec4899", href: "https://www.coursera.org/account/accomplishments/records/BN5J3LCJ6WED", img: "/cert-3.png" },
+                            { title: "Oracle Cloud Infrastructure Foundations", issuer: "Oracle", color: "#fb923c", href: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=3F67FB56DBCB9318F975F2D70147FCA29CEF643E1309DC12B45600FEB27F33F5", img: "/cert-4.png" },
+                            { title: "AWS Cloud Technical Essentials", issuer: "AWS", color: "#00e800", href: "https://www.coursera.org/account/accomplishments/records/7BL4KITYIBMJ", img: "/cert-5.png" }
 
-                    ].map((cert, i) => (
-                        <motion.a
-                            key={i}
-                            href={cert.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ y: -8, scale: 1.02 }}
-                            transition={{ duration: 0.3 }}
-                            className="group relative rounded-2xl overflow-hidden cursor-pointer"
-                            style={{
-                                background: 'linear-gradient(180deg, rgba(5, 15, 30, 0.9) 0%, rgba(2, 8, 20, 0.95) 100%)',
-                                backdropFilter: 'blur(5px)',
-                                border: `1px solid ${cert.color}33`,
-                                boxShadow: '0 4px 24px rgba(0, 0, 0, 0.4)'
-                            }}
-                        >
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                style={{ background: `radial-gradient(circle at 50% 0%, ${cert.color}25, transparent 70%)` }}
-                            />
-                            <div className="relative h-40 overflow-hidden">
-                                <Image src={cert.img} alt={cert.title} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-500" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                                <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold"
-                                    style={{ background: 'rgba(0, 0, 0, 0.7)', color: cert.color, border: `1px solid ${cert.color}66` }}
-                                >
-                                    {cert.issuer}
+                        ].map((cert, i) => (
+                            <motion.a
+                                key={i}
+                                href={cert.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                whileHover={{ y: -8, scale: 1.02 }}
+                                transition={{ duration: 0.3 }}
+                                className="group relative rounded-2xl overflow-hidden cursor-pointer flex-shrink-0"
+                                style={{
+                                    width: '300px',
+                                    background: 'linear-gradient(180deg, rgba(5, 15, 30, 0.9) 0%, rgba(2, 8, 20, 0.95) 100%)',
+                                    backdropFilter: 'blur(5px)',
+                                    border: `1px solid ${cert.color}33`,
+                                    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.4)'
+                                }}
+                            >
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                    style={{ background: `radial-gradient(circle at 50% 0%, ${cert.color}25, transparent 70%)` }}
+                                />
+                                <div className="relative h-48 overflow-hidden">
+                                    <Image src={cert.img} alt={cert.title} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                                    <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-xs font-bold"
+                                        style={{ background: 'rgba(0, 0, 0, 0.7)', color: cert.color, border: `1px solid ${cert.color}66` }}
+                                    >
+                                        {cert.issuer}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="p-4 relative">
-                                <h5 className="text-white font-semibold text-sm leading-tight mb-2 group-hover:text-cyan-400 transition-colors line-clamp-2">
-                                    {cert.title}
-                                </h5>
-                                <div className="flex items-center gap-2 text-white/40 text-xs">
-                                    <svg className="w-4 h-4" style={{ color: cert.color }} fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Verified</span>
+                                <div className="p-5 relative">
+                                    <h5 className="text-white font-semibold text-base leading-tight mb-2 group-hover:text-cyan-400 transition-colors line-clamp-2">
+                                        {cert.title}
+                                    </h5>
+                                    <div className="flex items-center gap-2 text-white/40 text-xs">
+                                        <svg className="w-4 h-4" style={{ color: cert.color }} fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                        </svg>
+                                        <span>Verified</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.a>
-                    ))}
+                            </motion.a>
+                        ))}
+                    </div>
+
+                    {/* Scroll Hint */}
+                    <div className="absolute right-0 top-0 bottom-6 w-20 bg-gradient-to-l from-black/60 to-transparent pointer-events-none flex items-center justify-end pr-4">
+                        <svg className="w-6 h-6 text-white/30 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
                 </div>
             </motion.div>
         </section>
