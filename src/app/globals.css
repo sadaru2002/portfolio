@@ -133,3 +133,52 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Theme-Compatible Scrollbar for Certifications */
+.cert-scroll-container::-webkit-scrollbar {
+  height: 10px;
+}
+
+.cert-scroll-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin: 0 20px;
+}
+
+.cert-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #00f0ff 0%, #8b5cf6 50%, #ec4899 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.cert-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #00f0ff 0%, #a78bfa 50%, #f472b6 100%);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+  transform: scaleY(1.2);
+}
+
+.cert-scroll-container::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(90deg, #0cdcf7 0%, #9911ff 50%, #dd00ee 100%);
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
+}
+
+/* Floating Particle Animation */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
