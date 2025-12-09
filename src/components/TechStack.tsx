@@ -301,10 +301,8 @@ export default function TechStack() {
                 <div className="relative px-4">
                     {/* Horizontal Scroll Container */}
                     <div
-                        className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide"
+                        className="flex gap-6 overflow-x-auto pb-6"
                         style={{
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none',
                             WebkitOverflowScrolling: 'touch'
                         }}
                     >
