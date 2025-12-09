@@ -301,9 +301,9 @@ export default function TechStack() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
                     {[
                         { title: "Back-End Apps with Node.js & Express", issuer: "IBM", color: "#00f0ff", href: "https://www.coursera.org/account/accomplishments/records/37MN17QKX34E", img: "/cert-1.png" },
-                        { title: "React: Creating and Hosting a Full-Stack Site", issuer: "SkillUp", color: "#8b5cf6", href: "https://www.coursera.org/account/accomplishments/records/BXB9N2XQMXZ3", img: "/cert-2.png" },
-                        { title: "Introduction to Artificial Intelligence", issuer: "SkillUp", color: "#ec4899", href: "#", img: "/cert-3.png" },
-                        { title: "Oracle Cloud Infrastructure Foundations", issuer: "Oracle", color: "#fb923c", href: "#", img: "/cert-4.png" }
+                        { title: "Developing Front-End Apps with React", issuer: "SkillUp", color: "#8b5cf6", href: "https://www.coursera.org/account/accomplishments/records/BXB9N2XQMXZ3", img: "/cert-2.png" },
+                        { title: "Machine Learning with Python", issuer: "IBM", color: "#ec4899", href: "https://www.coursera.org/account/accomplishments/records/BN5J3LCJ6WED", img: "/cert-3.png" },
+                        { title: "Oracle Cloud Infrastructure Foundations", issuer: "Oracle", color: "#fb923c", href: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=3F67FB56DBCB9318F975F2D70147FCA29CEF643E1309DC12B45600FEB27F33F5", img: "/cert-4.png" }
                     ].map((cert, i) => (
                         <motion.a
                             key={i}

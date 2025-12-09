@@ -20,7 +20,7 @@ interface Project {
 const projects: Project[] = [
   {
     id: 1,
-    title: "CVMate",
+    title: "CVMate(solo)",
     subtitle: "AI-Powered Resume Builder",
     description: "A modern, intelligent resume builder that combines professional design templates with AI-powered optimization using Google's Gemini AI for real-time analytics and intelligent keyword suggestions.",
     image: "/cvmate.png",
@@ -31,31 +31,36 @@ const projects: Project[] = [
   },
   {
     id: 2,
-    title: "AlphaForge",
+    title: "AlphaForge(solo)",
     subtitle: "Algorithmic Trading System",
     description: "Institutional-grade automated trading platform for OANDA. Features multi-timeframe analysis, adaptive market regime detection, and Gemini AI validation for high-probability trading signals.",
     image: "/alphaforge.png",
     techStack: ["Python 3.11", "FastAPI", "React 18", "Docker", "Gemini Pro"],
     features: ["AI Signal Validation", "Multi-Timeframe", "Telegram Alerts", "Risk Management"],
+    liveUrl: "https://alphaforge.vercel.app",
     githubUrl: "https://github.com/sadaru2002/AlphaForge",
   },
   {
     id: 3,
-    title: "Portfolio",
+    title: "Portfolio(solo)",
     subtitle: "3D Interactive Portfolio",
-    description: "Award-winning style portfolio website featuring immersive 3D graphics, WebGL shaders, interactive robot assistant, and smooth scroll animations. Built with cutting-edge web technologies.",
+    description: "portfolio website featuring immersive 3D graphics, WebGL shaders, interactive robot assistant, and smooth scroll animations. Built with cutting-edge web technologies.",
     image: "/portfolio.png",
     techStack: ["Next.js 15", "Three.js", "React Three Fiber", "Framer Motion", "WebGL"],
     features: ["3D Black Hole", "Interactive Robot", "Smooth Scroll", "Liquid Glass Effects"],
+    githubUrl: "https://github.com/sadaru2002/Portfolio",
   },
+
+
   {
     id: 4,
-    title: "Citizen Voice",
+    title: "Citizen Voice(Group)",
     subtitle: "Civic Tech Platform",
     description: "Full-stack web application enabling citizens to report public issues with structured forms, real-time chat, AI chatbot support, and map-based location selection for accountability.",
     image: "/citizenvoice.png",
     techStack: ["Next.js", "PostgreSQL", "Prisma", "Firebase", "Gemini API"],
     features: ["33+ Dynamic Forms", "Real-time Chat", "AI Chatbot", "PDF Receipts"],
+    liveUrl: "https://citizen-voice-five.vercel.app/",
   }
 ];
 
