@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const GEMINI_API_KEY = 'AIzaSyCIrOr2C3dDS481R38I5P0IOWLvSR9kfg4';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 export async function POST(request: NextRequest) {
     try {
