@@ -110,21 +110,27 @@ export default function Scene({ introComplete = false }: SceneProps) {
         }
 
         function animate(currentTime: number) {
-            animationId = requestAnimationFrame(animate);
-            
             // Frame throttling
             const deltaTime = currentTime - lastFrameTime;
-            if (deltaTime < frameInterval) return;
+            if (deltaTime < frameInterval) {
+                animationId = requestAnimationFrame(animate);
+                return;
+            }
             lastFrameTime = currentTime - (deltaTime % frameInterval);
-            
+
             // Smooth mouse interpolation
             mouseX += (targetMouseX - mouseX) * 0.08;
             mouseY += (targetMouseY - mouseY) * 0.08;
-            
-            if (!ctx || !canvas) return;
+
+            if (!ctx || !canvas) {
+                animationId = requestAnimationFrame(animate);
+                return;
+            }
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
             drawStars(currentTime);
+
+            animationId = requestAnimationFrame(animate);
         }
 
         window.addEventListener('resize', resize, { passive: true });
@@ -167,7 +173,7 @@ export default function Scene({ introComplete = false }: SceneProps) {
             `;
 
             // Simplified shader for better performance
-        const fsSource = `
+            const fsSource = `
             precision mediump float;
             uniform float t;
             uniform vec2 r;
@@ -208,7 +214,7 @@ export default function Scene({ introComplete = false }: SceneProps) {
                     vec2 v = c;
                     v *= mat2(cos(log(length(v)) + t * 0.2 + vec4(0.0, 33.0, 11.0, 0.0))) * 5.0;
                     vec4 animAccum = vec4(0.0);
-                    for (int i = 1; i <= 6; i++) { // Reduced from 9 to 6 iterations
+                    for (int i = 1; i <= 6; i++) { // Restored to 6 iterations for quality
                         float fi = float(i);
                         animAccum += sin(vec4(v.x, v.y, v.y, v.x)) + vec4(1.0);
                         v += 0.7 * sin(vec2(v.y, v.x) * fi + t) / fi + 0.5;
@@ -255,118 +261,131 @@ export default function Scene({ introComplete = false }: SceneProps) {
             }
         `;
 
-        function createShader(type: number, source: string): WebGLShader | null {
-            const shader = gl!.createShader(type);
-            if (!shader) return null;
-            gl!.shaderSource(shader, source);
-            gl!.compileShader(shader);
-            if (!gl!.getShaderParameter(shader, gl!.COMPILE_STATUS)) {
-                console.error('Shader compile failed:', gl!.getShaderInfoLog(shader));
-                gl!.deleteShader(shader);
-                return null;
+            function createShader(type: number, source: string): WebGLShader | null {
+                const shader = gl!.createShader(type);
+                if (!shader) return null;
+                gl!.shaderSource(shader, source);
+                gl!.compileShader(shader);
+                if (!gl!.getShaderParameter(shader, gl!.COMPILE_STATUS)) {
+                    console.error('Shader compile failed:', gl!.getShaderInfoLog(shader));
+                    gl!.deleteShader(shader);
+                    return null;
+                }
+                return shader;
             }
-            return shader;
-        }
 
-        function createProgram(vs: string, fs: string): WebGLProgram | null {
-            const vertexShader = createShader(gl!.VERTEX_SHADER, vs);
-            const fragmentShader = createShader(gl!.FRAGMENT_SHADER, fs);
-            if (!vertexShader || !fragmentShader) return null;
+            function createProgram(vs: string, fs: string): WebGLProgram | null {
+                const vertexShader = createShader(gl!.VERTEX_SHADER, vs);
+                const fragmentShader = createShader(gl!.FRAGMENT_SHADER, fs);
+                if (!vertexShader || !fragmentShader) return null;
 
-            const program = gl!.createProgram();
-            if (!program) return null;
-            gl!.attachShader(program, vertexShader);
-            gl!.attachShader(program, fragmentShader);
-            gl!.linkProgram(program);
-            if (!gl!.getProgramParameter(program, gl!.LINK_STATUS)) {
-                console.error('Program failed to link:', gl!.getProgramInfoLog(program));
-                gl!.deleteProgram(program);
-                return null;
+                const program = gl!.createProgram();
+                if (!program) return null;
+                gl!.attachShader(program, vertexShader);
+                gl!.attachShader(program, fragmentShader);
+                gl!.linkProgram(program);
+                if (!gl!.getProgramParameter(program, gl!.LINK_STATUS)) {
+                    console.error('Program failed to link:', gl!.getProgramInfoLog(program));
+                    gl!.deleteProgram(program);
+                    return null;
+                }
+                return program;
             }
-            return program;
-        }
 
-        const program = createProgram(vsSource, fsSource);
-        if (!program) return;
-        gl.useProgram(program);
+            const program = createProgram(vsSource, fsSource);
+            if (!program) return;
+            gl.useProgram(program);
 
-        const positionLocation = gl.getAttribLocation(program, 'a_position');
-        const timeLocation = gl.getUniformLocation(program, 't');
-        const resolutionLocation = gl.getUniformLocation(program, 'r');
-        const scrollLocation = gl.getUniformLocation(program, 'scrollOffset');
+            const positionLocation = gl.getAttribLocation(program, 'a_position');
+            const timeLocation = gl.getUniformLocation(program, 't');
+            const resolutionLocation = gl.getUniformLocation(program, 'r');
+            const scrollLocation = gl.getUniformLocation(program, 'scrollOffset');
 
-        const vertices = new Float32Array([
-            -1, -1, 1, -1, -1, 1,
-            -1, 1, 1, -1, 1, 1,
-        ]);
-        const buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(positionLocation);
-        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+            const vertices = new Float32Array([
+                -1, -1, 1, -1, -1, 1,
+                -1, 1, 1, -1, 1, 1,
+            ]);
+            const buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            gl.enableVertexAttribArray(positionLocation);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-        function resize() {
-            if (!canvas || !gl) return;
-            const dpr = Math.min(window.devicePixelRatio, 1.5); // Limit for performance
-            canvas.width = window.innerWidth * dpr;
-            canvas.height = window.innerHeight * dpr;
-            canvas.style.width = window.innerWidth + 'px';
-            canvas.style.height = window.innerHeight + 'px';
-            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        }
-        window.addEventListener('resize', resize, { passive: true });
-        resize();
+            function resize() {
+                if (!canvas || !gl) return;
+                const dpr = Math.min(window.devicePixelRatio, 1.5); // Restored for quality
+                canvas.width = window.innerWidth * dpr;
+                canvas.height = window.innerHeight * dpr;
+                canvas.style.width = window.innerWidth + 'px';
+                canvas.style.height = window.innerHeight + 'px';
+                gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+            }
+            window.addEventListener('resize', resize, { passive: true });
+            resize();
 
-        // Start with correct offset (black hole on right)
-        let scrollProgress = 0;
-        let targetScrollProgress = 0;
+            // Start with correct offset (black hole on right)
+            let scrollProgress = 0;
+            let targetScrollProgress = 0;
 
-        function handleScroll() {
-            const scrollY = window.scrollY;
-            const heroHeight = window.innerHeight;
-            targetScrollProgress = Math.min(scrollY / heroHeight, 1);
-        }
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll();
-        // Initialize to current scroll position immediately
-        scrollProgress = targetScrollProgress;
+            // Throttled scroll handler
+            let scrollTicking = false;
+            function handleScroll() {
+                if (!scrollTicking) {
+                    scrollTicking = true;
+                    requestAnimationFrame(() => {
+                        const scrollY = window.scrollY;
+                        const heroHeight = window.innerHeight;
+                        targetScrollProgress = Math.min(scrollY / heroHeight, 1);
+                        scrollTicking = false;
+                    });
+                }
+            }
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            // Initialize to current scroll position immediately
+            const initScrollY = window.scrollY;
+            const initHeroHeight = window.innerHeight;
+            targetScrollProgress = Math.min(initScrollY / initHeroHeight, 1);
+            scrollProgress = targetScrollProgress;
 
-        const startTime = performance.now();
-        let animationId: number;
-        let lastRenderTime = 0;
-        const targetFPS = 60;
-        const renderInterval = 1000 / targetFPS;
+            const startTime = performance.now();
+            let animationId: number;
+            let lastRenderTime = 0;
+            const targetFPS = 60;
+            const renderInterval = 1000 / targetFPS;
 
-        function render(currentTime: number) {
-            animationId = requestAnimationFrame(render);
-            
-            // Frame throttling for consistent performance
-            const deltaTime = currentTime - lastRenderTime;
-            if (deltaTime < renderInterval) return;
-            lastRenderTime = currentTime - (deltaTime % renderInterval);
-            
-            const delta = (currentTime - startTime) / 1000;
+            function render(currentTime: number) {
+                // Frame throttling for consistent performance
+                const deltaTime = currentTime - lastRenderTime;
+                if (deltaTime < renderInterval) {
+                    animationId = requestAnimationFrame(render);
+                    return;
+                }
+                lastRenderTime = currentTime - (deltaTime % renderInterval);
 
-            // Smoother scroll interpolation
-            scrollProgress += (targetScrollProgress - scrollProgress) * 0.08;
-            // Black hole on right side (offset 0.7 when at top)
-            const offset = 0.7 * (1 - scrollProgress);
+                const delta = (currentTime - startTime) / 1000;
 
-            gl!.uniform1f(timeLocation, delta);
-            gl!.uniform2f(resolutionLocation, canvas!.width, canvas!.height);
-            gl!.uniform1f(scrollLocation, offset);
-            gl!.drawArrays(gl!.TRIANGLES, 0, 6);
-        }
-        animationId = requestAnimationFrame(render);
+                // Smoother scroll interpolation
+                scrollProgress += (targetScrollProgress - scrollProgress) * 0.08;
+                // Black hole on right side (offset 0.7 when at top)
+                const offset = 0.7 * (1 - scrollProgress);
 
-        // Store cleanup function
-        cleanupFn = () => {
-            window.removeEventListener('resize', resize);
-            window.removeEventListener('scroll', handleScroll);
-            cancelAnimationFrame(animationId);
-            gl.deleteProgram(program);
-            gl.deleteBuffer(buffer);
-        };
+                gl!.uniform1f(timeLocation, delta);
+                gl!.uniform2f(resolutionLocation, canvas!.width, canvas!.height);
+                gl!.uniform1f(scrollLocation, offset);
+                gl!.drawArrays(gl!.TRIANGLES, 0, 6);
+
+                animationId = requestAnimationFrame(render);
+            }
+            render(performance.now());
+
+            // Store cleanup function
+            cleanupFn = () => {
+                window.removeEventListener('resize', resize);
+                window.removeEventListener('scroll', handleScroll);
+                cancelAnimationFrame(animationId);
+                gl.deleteProgram(program);
+                gl.deleteBuffer(buffer);
+            };
         }); // End of requestAnimationFrame callback
 
         return () => {
@@ -381,8 +400,8 @@ export default function Scene({ introComplete = false }: SceneProps) {
             <canvas
                 ref={starsRef}
                 className="fixed top-0 left-0 w-full h-full -z-20"
-                style={{ 
-                    background: '#000', 
+                style={{
+                    background: '#000',
                     pointerEvents: 'none',
                     willChange: 'transform',
                     transform: 'translate3d(0, 0, 0)',

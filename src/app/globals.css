@@ -34,6 +34,17 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Performance: Isolate fixed canvases from main document flow */
+canvas[class*="fixed"] {
+  contain: strict;
+  will-change: contents;
+}
+
+/* Performance: Optimize sections for paint containment */
+section {
+  contain: layout style paint;
+}
+
 /* GPU acceleration for animated elements */
 .gpu-accelerated {
   transform: translate3d(0, 0, 0);

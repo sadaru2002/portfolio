@@ -28,18 +28,15 @@ function RobotModel({ mousePosition, isHovering }: RobotModelProps) {
         mixerRef.current?.update(delta);
 
         if (groupRef.current) {
-            const targetY = isHovering ? 0 : mousePosition.x * 1.2;
-            const targetX = isHovering ? 0 : -mousePosition.y * 0.5;
-            const targetZ = isHovering ? 0 : -mousePosition.x * 0.15;
+            // Reduced multipliers and added clamping for smoother, less extreme rotation
+            const targetY = isHovering ? 0 : THREE.MathUtils.clamp(mousePosition.x * 0.6, -0.8, 0.3);
+            const targetX = isHovering ? 0 : THREE.MathUtils.clamp(-mousePosition.y * 0.3, -0.3, 0.3);
+            const targetZ = isHovering ? 0 : THREE.MathUtils.clamp(-mousePosition.x * 0.08, -0.15, 0.15);
 
-            groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetY, 0.12);
-            groupRef.current.rotation.x = THREE.MathUtils.lerp(
-                groupRef.current.rotation.x,
-                THREE.MathUtils.clamp(targetX, -0.4, 0.4),
-                0.12
-            );
+            groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetY, 0.1);
+            groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetX, 0.1);
             groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetZ, 0.08);
-            groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.05;
+            groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.0) * 0.05;
         }
     });
 
@@ -63,18 +60,30 @@ export default function Robot3D({ onChatOpen, isChatOpen = false }: Robot3DProps
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
-            const x = (e.clientX / window.innerWidth) * 2 - 1;
+            // Robot is on right side (around x=0.9 of screen), adjust reference point
+            // Map mouse from robot's perspective: when mouse is at robot's position (right side), x=0
+            const robotScreenX = 0.9; // Robot is at ~90% of screen width
+            const normalizedX = e.clientX / window.innerWidth;
+            // x ranges from -1 (far left from robot) to ~0 (at robot) to small positive (past robot)
+            const x = (normalizedX - robotScreenX) * 1.5; // Reduced from 2.5 for subtler effect
             const y = -((e.clientY / window.innerHeight) * 2 - 1);
             setMousePosition({ x, y });
         };
 
-        // Scroll detection for contact section
+        // Throttled scroll detection for contact section
+        let scrollTicking = false;
         const handleScroll = () => {
-            const contactSection = document.getElementById('contact');
-            if (contactSection) {
-                const rect = contactSection.getBoundingClientRect();
-                const isInView = rect.top < window.innerHeight * 0.7 && rect.bottom > 0;
-                setShowContactMessage(isInView);
+            if (!scrollTicking) {
+                scrollTicking = true;
+                requestAnimationFrame(() => {
+                    const contactSection = document.getElementById('contact');
+                    if (contactSection) {
+                        const rect = contactSection.getBoundingClientRect();
+                        const isInView = rect.top < window.innerHeight * 0.7 && rect.bottom > 0;
+                        setShowContactMessage(isInView);
+                    }
+                    scrollTicking = false;
+                });
             }
         };
 
@@ -123,20 +132,28 @@ export default function Robot3D({ onChatOpen, isChatOpen = false }: Robot3DProps
 
             <Canvas
                 camera={{ position: [0, 0, 5], fov: 45 }}
-                gl={{ 
-                    alpha: true, 
+                gl={{
+                    alpha: true,
                     antialias: false, // Disable for performance
                     powerPreference: 'high-performance',
                     failIfMajorPerformanceCaveat: false,
                 }}
-                dpr={[1, 1.5]} // Limit device pixel ratio
+                dpr={[1, 1.5]} // Restored for quality
                 performance={{ min: 0.5 }} // Allow frame rate to drop for performance
                 style={{ background: 'transparent', pointerEvents: 'auto' }}
             >
-                <ambientLight intensity={0.8} />
-                <directionalLight position={[5, 5, 5]} intensity={1.5} color="#00F0FF" />
-                <directionalLight position={[-5, -5, 5]} intensity={0.8} color="#FF00FF" />
-                <pointLight position={[0, 2, 3]} intensity={1.2} color="#00FFFF" />
+                {/* Enhanced lighting for robot */}
+                <ambientLight intensity={0.4} />
+                {/* Key light - main cyan from front-right */}
+                <directionalLight position={[3, 3, 5]} intensity={2} color="#00F0FF" />
+                {/* Fill light - purple from left */}
+                <directionalLight position={[-4, 2, 3]} intensity={1.2} color="#8B5CF6" />
+                {/* Rim light - magenta from behind */}
+                <directionalLight position={[0, 2, -4]} intensity={1.5} color="#FF00FF" />
+                {/* Top highlight */}
+                <pointLight position={[0, 4, 2]} intensity={1} color="#00FFFF" />
+                {/* Bottom subtle fill */}
+                <pointLight position={[0, -2, 3]} intensity={0.5} color="#4B0082" />
 
                 <Suspense fallback={null}>
                     <RobotModel mousePosition={mousePosition} isHovering={isHovering} />
@@ -146,7 +163,7 @@ export default function Robot3D({ onChatOpen, isChatOpen = false }: Robot3DProps
             <style jsx global>{`
                 .robot-msg {
                     position: absolute;
-                    bottom: 290px;
+                    bottom: 320px;
                     right: 10px;
                     padding: 12px 16px;
                     background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
