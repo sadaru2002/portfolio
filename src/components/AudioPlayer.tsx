@@ -71,7 +71,7 @@ export default function AudioPlayer() {
 
             {/* Minimal Glassmorphism Player */}
             <div
-                className="fixed bottom-6 left-6 z-50"
+                className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >

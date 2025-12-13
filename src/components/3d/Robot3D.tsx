@@ -102,7 +102,7 @@ export default function Robot3D({ onChatOpen, isChatOpen = false }: Robot3DProps
 
     return (
         <div
-            className="fixed -bottom-35 right-0 z-50 cursor-pointer"
+            className="fixed -bottom-35 right-0 z-50 cursor-pointer hidden sm:block"
             style={{ width: '200px', height: '300px' }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}

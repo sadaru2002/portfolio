@@ -64,7 +64,7 @@ const projects: Project[] = [
   }
 ];
 
-// Consistent animation variants
+// Animation variants - responsive for both layouts
 const cardVariants = {
   collapsed: {
     flex: 1,
@@ -154,9 +154,9 @@ export default function Portfolio() {
         </motion.h2>
       </div>
 
-      {/* Cards Container */}
-      <div className="relative max-w-[1400px] mx-auto px-6 z-10">
-        <div className="flex h-[70vh] min-h-[500px] gap-3">
+      {/* Cards Container - Vertical on mobile, Horizontal on desktop */}
+      <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 z-10">
+        <div className="flex flex-col md:flex-row md:h-[70vh] md:min-h-[500px] gap-3 md:gap-3">
           {projects.map((project, index) => {
             const isActive = activeIndex === index;
             const isOther = activeIndex !== null && activeIndex !== index;
@@ -165,7 +165,7 @@ export default function Portfolio() {
               <motion.div
                 key={project.id}
                 onClick={() => handleCardClick(index)}
-                className="relative cursor-pointer overflow-hidden rounded-2xl"
+                className="relative cursor-pointer overflow-hidden rounded-2xl min-h-[200px] md:min-h-0"
                 variants={cardVariants}
                 initial="collapsed"
                 animate={isActive ? "expanded" : "collapsed"}

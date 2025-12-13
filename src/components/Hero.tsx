@@ -37,7 +37,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
         }}
         transition={{ ...smoothTransition, delay: 0.4 }}
         whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-        className="absolute top-6 left-12 md:left-20 z-[100] cursor-pointer"
+        className="absolute top-4 left-4 sm:top-6 sm:left-12 md:left-20 z-[100] cursor-pointer"
         style={{ willChange: 'transform, opacity' }}
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
@@ -57,12 +57,12 @@ export default function Hero({ contentVisible = true }: HeroProps) {
           x: contentVisible ? 0 : -50
         }}
         transition={{ ...smoothTransition, delay: 0.1 }}
-        className="w-1/2 pl-12 md:pl-20 pr-6"
+        className="w-full md:w-1/2 px-4 sm:pl-12 md:pl-20 pr-4 sm:pr-6"
         style={{ willChange: contentVisible ? 'auto' : 'transform, opacity' }}
       >
         {/* Main headline with name */}
         <motion.h1
-          className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.95] mb-6 tracking-tight"
+          className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.95] mb-4 sm:mb-6 tracking-tight"
           style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
           initial={{ opacity: 0, y: 50 }}
           animate={{
@@ -122,14 +122,14 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             className="w-3 h-3 rounded-full animate-pulse"
             style={{ backgroundColor: '#00F0FF' }}
           />
-          <span className="text-gray-300 text-sm md:text-base tracking-widest font-mono uppercase">
+          <span className="text-gray-300 text-xs sm:text-sm md:text-base tracking-widest font-mono uppercase">
             Developer // Creative Thinker
           </span>
         </motion.div>
 
         {/* Description */}
         <motion.p
-          className="text-base md:text-lg text-gray-400 mb-8 max-w-md leading-relaxed"
+          className="text-sm sm:text-base md:text-lg text-gray-400 mb-6 sm:mb-8 max-w-md leading-relaxed"
           initial={{ opacity: 0, y: 20 }}
           animate={{
             opacity: contentVisible ? 1 : 0,
@@ -174,8 +174,8 @@ export default function Hero({ contentVisible = true }: HeroProps) {
         </motion.div>
       </motion.div>
 
-      {/* Right side - Space for Black Hole */}
-      <div className="w-1/2 h-full" />
+      {/* Right side - Space for Black Hole (hidden on mobile) */}
+      <div className="hidden md:block w-1/2 h-full" />
 
       {/* Scroll Indicator */}
       <motion.div

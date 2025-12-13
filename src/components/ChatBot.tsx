@@ -166,7 +166,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.8, y: 50 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="fixed bottom-24 right-52 z-[70000] w-[380px] max-h-[600px] flex flex-col"
+                    className="fixed bottom-4 right-4 sm:bottom-24 sm:right-52 z-[70000] w-[calc(100%-32px)] sm:w-[380px] max-h-[70vh] sm:max-h-[600px] flex flex-col"
                     style={{
                         background: 'linear-gradient(180deg, rgba(5, 15, 35, 0.95) 0%, rgba(2, 8, 25, 0.98) 100%)',
                         backdropFilter: 'blur(20px)',
