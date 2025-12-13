@@ -24,7 +24,7 @@ export default function AudioPlayer() {
                 widgetRef.current = (window as any).SC.Widget(iframeRef.current);
 
                 widgetRef.current.bind((window as any).SC.Widget.Events.READY, () => {
-                    widgetRef.current.setVolume(50);
+                    widgetRef.current.setVolume(100);
                 });
 
                 widgetRef.current.bind((window as any).SC.Widget.Events.PLAY, () => {
@@ -52,7 +52,7 @@ export default function AudioPlayer() {
 
     const toggleMute = () => {
         if (widgetRef.current) {
-            widgetRef.current.setVolume(isMuted ? 50 : 0);
+            widgetRef.current.setVolume(isMuted ? 100 : 0);
             setIsMuted(!isMuted);
         }
     };
