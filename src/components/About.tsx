@@ -3,10 +3,19 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Mail, ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export default function About() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(true); // Default to mobile to avoid flash
+  
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
@@ -16,7 +25,7 @@ export default function About() {
   const rotate = useTransform(scrollYProgress, [0, 1], [5, -5]);
 
   return (
-    <section id="about" ref={containerRef} className="py-32 px-6 md:px-20 relative z-10 overflow-hidden">
+    <section id="about" ref={containerRef} className="py-16 sm:py-32 px-4 sm:px-6 md:px-20 relative z-10 overflow-hidden">
       {/* Dark backdrop for About section - makes text clearly visible */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -32,11 +41,11 @@ export default function About() {
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px]" />
       </div>
 
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-[2]">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 sm:gap-16 relative z-[2]">
 
         {/* Left Side - Profile Image with Liquid Glass Effect */}
         <motion.div
-          style={{ y, rotate }}
+          style={isMobile ? {} : { y, rotate }}
           className="w-full md:w-1/2 relative perspective-1000"
         >
           <motion.div
@@ -52,7 +61,7 @@ export default function About() {
               <div className="absolute -inset-1 bg-gradient-to-r from-accent via-purple-500 to-accent rounded-[60%_40%_30%_70%/60%_30%_70%_40%] opacity-75 blur-md group-hover:opacity-100 transition-opacity duration-500 animate-blob" />
 
               {/* Glass Card */}
-              <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]">
+              <div className="relative aspect-[4/5] rounded-2xl sm:rounded-[2rem] overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]">
                 <div className="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent z-10" />
 
                 <Image
@@ -66,14 +75,14 @@ export default function About() {
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20 pointer-events-none" />
 
                 {/* Floating Badge */}
-                <div className="absolute bottom-6 left-6 z-30 bg-black/40 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-xs font-mono text-white/80">OPEN TO WORK</span>
+                <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-30 bg-black/40 backdrop-blur-md border border-white/10 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-[10px] sm:text-xs font-mono text-white/80">OPEN TO WORK</span>
                 </div>
               </div>
             </div>
 
-            {/* Background Decorative Elements */}
+            {/* Background Decorative Elements - hidden on mobile */}
             <motion.div
               animate={{
                 rotate: [0, 360],
@@ -84,7 +93,7 @@ export default function About() {
                 repeat: Infinity,
                 ease: "linear"
               }}
-              className="absolute -top-10 -right-10 w-32 h-32 border border-accent/20 rounded-full border-dashed z-0"
+              className="absolute -top-10 -right-10 w-32 h-32 border border-accent/20 rounded-full border-dashed z-0 hidden sm:block"
             />
             <motion.div
               animate={{
@@ -96,7 +105,7 @@ export default function About() {
                 repeat: Infinity,
                 ease: "linear"
               }}
-              className="absolute -bottom-10 -left-10 w-48 h-48 border border-purple-500/20 rounded-full border-dashed z-0"
+              className="absolute -bottom-10 -left-10 w-48 h-48 border border-purple-500/20 rounded-full border-dashed z-0 hidden sm:block"
             />
           </motion.div>
         </motion.div>
@@ -109,18 +118,18 @@ export default function About() {
           viewport={{ once: true }}
           className="w-full md:w-1/2"
         >
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-px w-12 bg-accent" />
-            <h4 className="text-accent font-bold tracking-widest uppercase text-sm">The Developer</h4>
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <span className="h-px w-8 sm:w-12 bg-accent" />
+            <h4 className="text-accent font-bold tracking-widest uppercase text-xs sm:text-sm">The Developer</h4>
           </div>
 
-          <h2 className="text-4xl md:text-6xl font-black mb-8 text-white leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-6 sm:mb-8 text-white leading-tight">
             About <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">Me.</span>
           </h2>
 
-          <h3 className="text-2xl font-medium mb-6 text-gray-200">I&apos;m Thilina Sandaruwan.</h3>
+          <h3 className="text-xl sm:text-2xl font-medium mb-4 sm:mb-6 text-gray-200">I&apos;m Thilina Sandaruwan.</h3>
 
-          <div className="space-y-6 text-gray-400 text-lg leading-relaxed">
+          <div className="space-y-4 sm:space-y-6 text-gray-400 text-base sm:text-lg leading-relaxed">
             <p>
               I am a <span className="text-white font-medium">developer</span> by trade and an <span className="text-white font-medium">innovative thinker</span> by nature. For me, code isn&apos;t just about syntax — it&apos;s about solving problems with a creative mind.
             </p>
@@ -129,14 +138,14 @@ export default function About() {
             </p>
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
             <a
               href="mailto:lakmalsadaruwan411@gmail.com"
-              className="group relative px-8 py-4 bg-white text-black rounded-full font-bold overflow-hidden transition-transform active:scale-95"
+              className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-white text-black rounded-full font-bold overflow-hidden transition-transform active:scale-95 text-center text-sm sm:text-base"
             >
               <div className="absolute inset-0 bg-accent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-              <span className="relative flex items-center gap-2 group-hover:text-black transition-colors">
-                <Mail size={20} />
+              <span className="relative flex items-center justify-center gap-2 group-hover:text-black transition-colors">
+                <Mail size={18} className="sm:w-5 sm:h-5" />
                 Contact Me
               </span>
             </a>
@@ -144,10 +153,10 @@ export default function About() {
             <a
               href="/cv.pdf"
               target="_blank"
-              className="group px-8 py-4 border border-white/20 text-white rounded-full font-medium hover:bg-white/5 transition-all flex items-center gap-2"
+              className="group px-6 sm:px-8 py-3 sm:py-4 border border-white/20 text-white rounded-full font-medium hover:bg-white/5 transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
             >
               Download CV
-              <ArrowUpRight size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              <ArrowUpRight size={16} className="sm:w-[18px] sm:h-[18px] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </a>
           </div>
         </motion.div>

@@ -120,7 +120,7 @@ export default function Portfolio() {
   };
 
   return (
-    <section id="portfolio" className="relative min-h-screen py-20 overflow-hidden">
+    <section id="portfolio" className="relative min-h-screen py-12 sm:py-20 overflow-hidden">
       {/* Backdrop */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -131,7 +131,7 @@ export default function Portfolio() {
       />
 
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-6 mb-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-8 sm:mb-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -148,15 +148,15 @@ export default function Portfolio() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           viewport={{ once: true }}
-          className="text-5xl md:text-7xl font-black text-white"
+          className="text-3xl sm:text-5xl md:text-7xl font-black text-white"
         >
           Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">Work</span>
         </motion.h2>
       </div>
 
       {/* Cards Container - Vertical on mobile, Horizontal on desktop */}
-      <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 z-10">
-        <div className="flex flex-col md:flex-row md:h-[70vh] md:min-h-[500px] gap-3 md:gap-3">
+      <div className="relative max-w-[1400px] mx-auto px-3 sm:px-6 z-10">
+        <div className="flex flex-col md:flex-row md:h-[70vh] md:min-h-[500px] gap-2 sm:gap-3">
           {projects.map((project, index) => {
             const isActive = activeIndex === index;
             const isOther = activeIndex !== null && activeIndex !== index;
@@ -165,7 +165,7 @@ export default function Portfolio() {
               <motion.div
                 key={project.id}
                 onClick={() => handleCardClick(index)}
-                className="relative cursor-pointer overflow-hidden rounded-2xl min-h-[200px] md:min-h-0"
+                className="relative cursor-pointer overflow-hidden rounded-xl sm:rounded-2xl min-h-[160px] sm:min-h-[200px] md:min-h-0"
                 variants={cardVariants}
                 initial="collapsed"
                 animate={isActive ? "expanded" : "collapsed"}
@@ -221,9 +221,9 @@ export default function Portfolio() {
                 />
 
                 {/* Number */}
-                <div className="absolute top-5 left-5 z-20">
+                <div className="absolute top-3 left-3 sm:top-5 sm:left-5 z-20">
                   <span
-                    className="text-5xl font-extralight"
+                    className="text-3xl sm:text-5xl font-extralight"
                     style={{
                       color: 'rgba(255,255,255,0.4)',
                       opacity: isActive ? 0.3 : 0.6
@@ -235,11 +235,11 @@ export default function Portfolio() {
 
                 {/* Vertical title (when collapsed) */}
                 <motion.div
-                  className="absolute z-20 font-bold text-lg text-cyan-400 whitespace-nowrap"
+                  className="absolute z-20 font-bold text-sm sm:text-lg text-cyan-400 whitespace-nowrap"
                   animate={{
-                    left: isActive ? 20 : 24,
-                    bottom: isActive ? 'auto' : 80,
-                    top: isActive ? 60 : 'auto',
+                    left: isActive ? 16 : 20,
+                    bottom: isActive ? 'auto' : 60,
+                    top: isActive ? 50 : 'auto',
                     rotate: isActive ? 0 : -90,
                   }}
                   transition={{ type: "spring", stiffness: 200, damping: 30 }}
@@ -255,44 +255,44 @@ export default function Portfolio() {
                 <AnimatePresence>
                   {isActive && (
                     <motion.div
-                      className="absolute bottom-4 left-4 right-4 z-30"
+                      className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 z-30"
                       variants={contentVariants}
                       initial="hidden"
                       animate="visible"
                       exit="exit"
                     >
                       <div
-                        className="p-6 rounded-xl"
+                        className="p-3 sm:p-6 rounded-lg sm:rounded-xl"
                         style={{
                           background: 'rgba(0, 0, 0, 0.7)',
                           backdropFilter: 'blur(20px)',
                           border: '1px solid rgba(255,255,255,0.1)',
                         }}
                       >
-                        <motion.h3 variants={itemVariants} className="text-3xl font-bold text-white mb-1">
+                        <motion.h3 variants={itemVariants} className="text-xl sm:text-3xl font-bold text-white mb-1">
                           {project.title}
                         </motion.h3>
 
-                        <motion.p variants={itemVariants} className="text-cyan-400 text-lg mb-3">
+                        <motion.p variants={itemVariants} className="text-cyan-400 text-sm sm:text-lg mb-2 sm:mb-3">
                           {project.subtitle}
                         </motion.p>
 
-                        <motion.p variants={itemVariants} className="text-white/60 text-sm mb-4 max-w-lg">
+                        <motion.p variants={itemVariants} className="text-white/60 text-xs sm:text-sm mb-3 sm:mb-4 max-w-lg line-clamp-2 sm:line-clamp-none">
                           {project.description}
                         </motion.p>
 
-                        <motion.div variants={itemVariants} className="flex flex-wrap gap-2 mb-4">
-                          {project.techStack.map((tech) => (
+                        <motion.div variants={itemVariants} className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+                          {project.techStack.slice(0, 4).map((tech) => (
                             <span
                               key={tech}
-                              className="px-3 py-1 text-xs rounded-full border border-cyan-500/30 text-cyan-400 bg-cyan-500/10"
+                              className="px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs rounded-full border border-cyan-500/30 text-cyan-400 bg-cyan-500/10"
                             >
                               {tech}
                             </span>
                           ))}
                         </motion.div>
 
-                        <motion.div variants={itemVariants} className="flex flex-wrap gap-2 mb-5">
+                        <motion.div variants={itemVariants} className="hidden sm:flex flex-wrap gap-2 mb-5">
                           {project.features.map((feature) => (
                             <div
                               key={feature}
@@ -304,17 +304,18 @@ export default function Portfolio() {
                           ))}
                         </motion.div>
 
-                        <motion.div variants={itemVariants} className="flex gap-3">
+                        <motion.div variants={itemVariants} className="flex gap-2 sm:gap-3">
                           {project.liveUrl && (
                             <a
                               href={project.liveUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="flex items-center gap-2 px-5 py-2 rounded-full bg-cyan-400 text-black font-semibold text-sm hover:bg-cyan-300 transition-colors"
+                              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-1.5 sm:py-2 rounded-full bg-cyan-400 text-black font-semibold text-xs sm:text-sm hover:bg-cyan-300 transition-colors"
                             >
-                              <ExternalLink size={14} />
-                              Live Demo
+                              <ExternalLink size={12} className="sm:w-3.5 sm:h-3.5" />
+                              <span className="hidden sm:inline">Live Demo</span>
+                              <span className="sm:hidden">Demo</span>
                             </a>
                           )}
                           {project.githubUrl && (
@@ -323,10 +324,11 @@ export default function Portfolio() {
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="flex items-center gap-2 px-5 py-2 rounded-full border border-white/30 text-white text-sm hover:bg-white/10 transition-colors"
+                              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-1.5 sm:py-2 rounded-full border border-white/30 text-white text-xs sm:text-sm hover:bg-white/10 transition-colors"
                             >
-                              <Github size={14} />
-                              Source
+                              <Github size={12} className="sm:w-3.5 sm:h-3.5" />
+                              <span className="hidden sm:inline">Source</span>
+                              <span className="sm:hidden">Code</span>
                             </a>
                           )}
                         </motion.div>
@@ -337,42 +339,45 @@ export default function Portfolio() {
 
                 {/* Expand button */}
                 <motion.div
-                  className="absolute bottom-4 right-4 w-10 h-10 rounded-full border-2 border-cyan-400 flex items-center justify-center z-40 bg-black/40"
+                  className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-cyan-400 flex items-center justify-center z-40 bg-black/40"
                   animate={{ rotate: isActive ? 45 : 0 }}
                   transition={{ duration: 0.3 }}
                   style={{ boxShadow: '0 0 12px rgba(0, 240, 255, 0.4)' }}
                 >
-                  <span className="text-cyan-400 text-xl font-light">+</span>
+                  <span className="text-cyan-400 text-lg sm:text-xl font-light">+</span>
                 </motion.div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Nav arrows */}
+        {/* Nav arrows - hidden on mobile, shown as small buttons */}
         <button
           onClick={prevProject}
-          className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/50 backdrop-blur border border-cyan-500/30 flex items-center justify-center text-white hover:bg-black/70 transition-all z-30"
+          aria-label="Previous project"
+          className="absolute -left-1 sm:left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/50 backdrop-blur border border-cyan-500/30 flex items-center justify-center text-white hover:bg-black/70 transition-all z-30"
         >
-          <ChevronLeft size={22} />
+          <ChevronLeft size={18} className="sm:w-[22px] sm:h-[22px]" />
         </button>
         <button
           onClick={nextProject}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/50 backdrop-blur border border-cyan-500/30 flex items-center justify-center text-white hover:bg-black/70 transition-all z-30"
+          aria-label="Next project"
+          className="absolute -right-1 sm:right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/50 backdrop-blur border border-cyan-500/30 flex items-center justify-center text-white hover:bg-black/70 transition-all z-30"
         >
-          <ChevronRight size={22} />
+          <ChevronRight size={18} className="sm:w-[22px] sm:h-[22px]" />
         </button>
       </div>
 
       {/* Progress indicators */}
-      <div className="flex justify-center mt-8 gap-2 relative z-10">
+      <div className="flex justify-center mt-6 sm:mt-8 gap-1.5 sm:gap-2 relative z-10">
         {projects.map((_, index) => (
           <button
             key={index}
             onClick={() => setActiveIndex(index)}
+            aria-label={`Go to project ${index + 1}`}
             className="relative h-1 rounded-full overflow-hidden transition-all duration-300"
             style={{
-              width: activeIndex === index ? 48 : 32,
+              width: activeIndex === index ? 36 : 24,
               backgroundColor: activeIndex === index ? '#00F0FF' : 'rgba(255,255,255,0.2)'
             }}
           />

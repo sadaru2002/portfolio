@@ -63,11 +63,21 @@ const navItems: NavItem[] = [
 ];
 
 const ITEM_WIDTH = 78;
+const ITEM_WIDTH_MOBILE = 56;
 const NAV_PADDING = 8;
 
 export default function Navbar() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const isClickScrolling = useRef(false);
+
+  // Check for mobile screen
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Scroll spy using getBoundingClientRect for accurate detection
   useEffect(() => {
@@ -133,10 +143,10 @@ export default function Navbar() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeOut", delay: 4.5 }}
-      className="fixed top-8 left-1/2 -translate-x-1/2 z-[50000]"
+      className="fixed top-4 sm:top-8 left-1/2 -translate-x-1/2 z-[50000] max-w-[95vw]"
     >
       <div
-        className="relative flex items-center rounded-full"
+        className="relative flex items-center rounded-full overflow-x-auto scrollbar-hide"
         style={{
           padding: `${NAV_PADDING}px`,
           background: 'linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%)',
@@ -164,8 +174,8 @@ export default function Navbar() {
                 ${activeIndex === index ? 'text-white' : 'text-white/50 hover:text-cyan-400'}
               `}
               style={{
-                width: `${ITEM_WIDTH}px`,
-                height: '64px',
+                width: isMobile ? `${ITEM_WIDTH_MOBILE}px` : `${ITEM_WIDTH}px`,
+                height: isMobile ? '52px' : '64px',
                 background: 'transparent',
                 border: 'none',
                 transform: activeIndex === index ? 'translateY(-2px) scale(1.05)' : 'translateY(0) scale(1)',
@@ -173,15 +183,15 @@ export default function Navbar() {
               }}
             >
               <div
-                className="transition-all duration-300"
+                className="transition-all duration-300 w-5 h-5 sm:w-6 sm:h-6"
                 style={{
                   transform: activeIndex === index ? 'scale(1.1)' : 'scale(1)',
                   filter: activeIndex === index ? 'drop-shadow(0 0 6px rgba(0, 240, 255, 0.6))' : 'none'
                 }}
               >
-                <div className="w-6 h-6">{item.icon}</div>
+                {item.icon}
               </div>
-              <span className="text-xs font-medium mt-1.5 tracking-wide">{item.label}</span>
+              <span className="text-[10px] sm:text-xs font-medium mt-1 sm:mt-1.5 tracking-wide">{item.label}</span>
             </button>
           ))}
         </div>
@@ -189,12 +199,12 @@ export default function Navbar() {
         {/* Smooth sliding indicator */}
         <motion.div
           className="absolute rounded-full z-0"
-          animate={{ x: activeIndex * ITEM_WIDTH }}
+          animate={{ x: activeIndex * (isMobile ? ITEM_WIDTH_MOBILE : ITEM_WIDTH) }}
           transition={{ type: "spring", stiffness: 150, damping: 20, mass: 0.8 }}
           style={{
             left: `${NAV_PADDING}px`,
             top: `${NAV_PADDING}px`,
-            width: `${ITEM_WIDTH}px`,
+            width: isMobile ? `${ITEM_WIDTH_MOBILE}px` : `${ITEM_WIDTH}px`,
             height: `calc(100% - ${NAV_PADDING * 2}px)`,
             background: 'linear-gradient(180deg, rgba(0, 240, 255, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%)',
             boxShadow: `

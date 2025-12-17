@@ -115,19 +115,19 @@ export default function TechStack() {
     };
 
     return (
-        <section id="skills" className="py-20 relative z-10 overflow-hidden">
-            <div className="max-w-6xl mx-auto px-6">
+        <section id="skills" className="py-12 sm:py-20 relative z-10 overflow-hidden">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
-                    className="text-center mb-14"
+                    className="text-center mb-8 sm:mb-14"
                 >
-                    <h4 className="text-cyan-400 font-bold tracking-widest mb-4 uppercase text-sm">
+                    <h4 className="text-cyan-400 font-bold tracking-widest mb-3 sm:mb-4 uppercase text-xs sm:text-sm">
                         My Skills
                     </h4>
-                    <h2 className="text-4xl md:text-5xl font-bold text-white">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
                         The Secret{' '}
                         <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                             Sauce
@@ -141,11 +141,11 @@ export default function TechStack() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                     viewport={{ once: true }}
-                    className="flex justify-center mb-14"
+                    className="flex justify-center mb-8 sm:mb-14 overflow-x-auto scrollbar-hide px-2"
                 >
                     <div
                         ref={dockRef}
-                        className="inline-flex items-end rounded-[2rem] px-4 py-3"
+                        className="inline-flex items-end rounded-2xl sm:rounded-[2rem] px-2 sm:px-4 py-2 sm:py-3"
                         style={{
                             background: 'rgba(255, 255, 255, 0.05)',
                             backdropFilter: 'blur(20px) saturate(180%)',
@@ -196,7 +196,7 @@ export default function TechStack() {
 
                                     {/* Icon */}
                                     <div
-                                        className="w-12 h-12 rounded-xl flex items-center justify-center"
+                                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center"
                                         style={{
                                             transform: style.transform,
                                             transformOrigin: 'bottom center',
@@ -208,9 +208,9 @@ export default function TechStack() {
                                         <Image
                                             src={tech.icon}
                                             alt={tech.name}
-                                            width={28}
-                                            height={28}
-                                            className="pointer-events-none"
+                                            width={24}
+                                            height={24}
+                                            className="pointer-events-none w-5 h-5 sm:w-7 sm:h-7"
                                             unoptimized
                                         />
                                     </div>
@@ -258,12 +258,12 @@ export default function TechStack() {
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
                 viewport={{ once: true }}
-                className="flex flex-wrap justify-center gap-3 mt-14 px-6"
+                className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-10 sm:mt-14 px-4 sm:px-6"
             >
                 {['AI/ML', 'Cloud Architecture', 'DevOps', 'UI/UX Design', 'System Design'].map((skill) => (
                     <span
                         key={skill}
-                        className="px-4 py-2 rounded-full text-sm text-white/60 border border-white/10 hover:border-cyan-400/50 hover:text-cyan-400 transition-all duration-300 cursor-default"
+                        className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm text-white/60 border border-white/10 hover:border-cyan-400/50 hover:text-cyan-400 transition-all duration-300 cursor-default"
                         style={{ background: 'rgba(255, 255, 255, 0.02)' }}
                     >
                         {skill}
@@ -277,11 +277,11 @@ export default function TechStack() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="mt-20 max-w-6xl mx-auto"
+                className="mt-14 sm:mt-20 max-w-6xl mx-auto"
             >
-                <div className="text-center mb-10">
+                <div className="text-center mb-6 sm:mb-10">
                     <span
-                        className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider mb-4"
+                        className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold tracking-wider mb-3 sm:mb-4"
                         style={{
                             background: 'linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
                             border: '1px solid rgba(0, 240, 255, 0.3)',
@@ -290,7 +290,7 @@ export default function TechStack() {
                     >
                         ✦ Verified Credentials
                     </span>
-                    <h3 className="text-3xl md:text-4xl font-bold text-white">
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
                         Professional{' '}
                         <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                             Certifications
