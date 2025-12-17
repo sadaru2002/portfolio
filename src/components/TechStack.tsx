@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Marquee } from './ui/Marquee';
@@ -56,7 +56,7 @@ const marqueeRow2: TechIcon[] = [
 
 const TechCard = ({ tech }: { tech: TechIcon }) => (
     <div
-        className="flex items-center gap-3 px-5 py-3 rounded-2xl transition-all duration-300 hover:scale-105 shrink-0"
+        className="flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl transition-all duration-300 hover:scale-105 shrink-0"
         style={{
             background: 'rgba(10, 15, 30, 0.9)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -68,16 +68,24 @@ const TechCard = ({ tech }: { tech: TechIcon }) => (
             alt={tech.name}
             width={22}
             height={22}
-            className="pointer-events-none"
+            className="pointer-events-none w-4 h-4 sm:w-[22px] sm:h-[22px]"
             unoptimized
         />
-        <span className="text-sm text-white/90 font-medium whitespace-nowrap">{tech.name}</span>
+        <span className="text-xs sm:text-sm text-white/90 font-medium whitespace-nowrap">{tech.name}</span>
     </div>
 );
 
 export default function TechStack() {
     const [mouseX, setMouseX] = useState<number | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
     const dockRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 640);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const handleMouseMove = (e: React.MouseEvent) => {
         if (dockRef.current) {
@@ -135,17 +143,21 @@ export default function TechStack() {
                     </h2>
                 </motion.div>
 
-                {/* Main Dock */}
+                {/* Main Dock - Grid on mobile, flex row on desktop */}
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                     viewport={{ once: true }}
-                    className="flex justify-center mb-8 sm:mb-14 overflow-x-auto scrollbar-hide px-2"
+                    className="flex justify-center mb-8 sm:mb-14 px-2"
                 >
                     <div
                         ref={dockRef}
-                        className="inline-flex items-end rounded-2xl sm:rounded-[2rem] px-2 sm:px-4 py-2 sm:py-3"
+                        className={`rounded-2xl sm:rounded-[2rem] px-3 sm:px-4 py-3 sm:py-3 ${
+                            isMobile 
+                                ? 'grid grid-cols-6 gap-2' 
+                                : 'inline-flex items-end'
+                        }`}
                         style={{
                             background: 'rgba(255, 255, 255, 0.05)',
                             backdropFilter: 'blur(20px) saturate(180%)',
@@ -156,21 +168,22 @@ export default function TechStack() {
                 0px 10px 40px rgba(0, 0, 0, 0.4)
               `
                         }}
-                        onMouseMove={handleMouseMove}
-                        onMouseLeave={handleMouseLeave}
+                        onMouseMove={!isMobile ? handleMouseMove : undefined}
+                        onMouseLeave={!isMobile ? handleMouseLeave : undefined}
                     >
                         {dockIcons.map((tech, index) => {
-                            const style = getIconStyle(index);
+                            const style = isMobile ? { transform: 'scale(1)', margin: '0' } : getIconStyle(index);
                             return (
                                 <div
                                     key={tech.name}
                                     className="relative flex flex-col items-center cursor-pointer group"
                                     style={{
-                                        margin: style.margin,
+                                        margin: isMobile ? '0' : style.margin,
                                         transition: 'margin 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)'
                                     }}
                                 >
-                                    {/* Tooltip */}
+                                    {/* Tooltip - hidden on mobile */}
+                                    {!isMobile && (
                                     <div
                                         className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none z-20"
                                         style={{ transition: 'opacity 0.15s ease' }}
@@ -193,6 +206,7 @@ export default function TechStack() {
                                             }}
                                         />
                                     </div>
+                                    )}
 
                                     {/* Icon */}
                                     <div
@@ -299,18 +313,18 @@ export default function TechStack() {
                 </div>
 
                 <div className="relative">
-                    {/* Cinematic Fade Edges */}
-                    <div className="absolute left-0 top-0 bottom-10 w-32 z-20 pointer-events-none"
-                        style={{ background: 'linear-gradient(90deg, #000000 0%, rgba(0,0,0,0.8) 30%, transparent 100%)' }}
+                    {/* Cinematic Fade Edges - hidden on mobile for performance */}
+                    <div className="hidden sm:block absolute left-0 top-0 bottom-10 w-16 sm:w-32 z-20 pointer-events-none"
+                        style={{ background: 'linear-gradient(90deg, #000000 0%, transparent 100%)' }}
                     />
-                    <div className="absolute right-0 top-0 bottom-10 w-32 z-20 pointer-events-none"
-                        style={{ background: 'linear-gradient(270deg, #000000 0%, rgba(0,0,0,0.8) 30%, transparent 100%)' }}
+                    <div className="hidden sm:block absolute right-0 top-0 bottom-10 w-16 sm:w-32 z-20 pointer-events-none"
+                        style={{ background: 'linear-gradient(270deg, #000000 0%, transparent 100%)' }}
                     />
 
                     {/* Horizontal Scroll Container */}
                     <div
-                        className="flex gap-8 overflow-x-auto pb-10 px-8 cert-scroll-container"
-                        style={{ WebkitOverflowScrolling: 'touch' }}
+                        className="flex gap-5 overflow-x-auto pt-4 pb-6 px-4 sm:px-8 cert-scroll-container snap-x snap-mandatory"
+                        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
                     >
                         {[
                             { title: "Back-End Apps with Node.js & Express", issuer: "IBM", color: "#00f0ff", href: "https://www.coursera.org/account/accomplishments/records/37MN17QKX34E", img: "/cert-1.png" },
@@ -324,84 +338,58 @@ export default function TechStack() {
                                 href={cert.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                initial={{ opacity: 0, y: 30 }}
+                                initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6, delay: i * 0.1 }}
+                                transition={{ duration: 0.4, delay: i * 0.05 }}
                                 viewport={{ once: true }}
-                                whileHover={{ y: -16, scale: 1.04, rotateY: 5 }}
-                                className="group relative rounded-3xl overflow-hidden cursor-pointer flex-shrink-0"
+                                whileHover={{ y: -8, scale: 1.02 }}
+                                className="group relative rounded-2xl overflow-hidden cursor-pointer flex-shrink-0 snap-center"
                                 style={{
-                                    width: '340px',
+                                    width: '300px',
+                                    minWidth: '300px',
                                     background: 'linear-gradient(160deg, rgba(15, 25, 45, 0.95) 0%, rgba(5, 10, 25, 0.98) 100%)',
-                                    border: `2px solid transparent`,
-                                    backgroundClip: 'padding-box',
-                                    boxShadow: `0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 2px ${cert.color}22, inset 0 1px 0 rgba(255,255,255,0.05)`
+                                    border: `1px solid ${cert.color}30`,
+                                    boxShadow: `0 8px 32px rgba(0, 0, 0, 0.4)`
                                 }}
                             >
-                                {/* Animated Border Gradient */}
-                                <div className="absolute -inset-[2px] rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10"
+                                {/* Subtle Glow Effect on Hover */}
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-50 transition-opacity duration-400"
                                     style={{
-                                        background: `linear-gradient(135deg, ${cert.color}, transparent 50%, ${cert.color})`,
-                                        filter: 'blur(1px)'
-                                    }}
-                                />
-
-                                {/* Glow Effect */}
-                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700"
-                                    style={{
-                                        background: `radial-gradient(ellipse at 50% -20%, ${cert.color}40, transparent 60%)`,
-                                        filter: 'blur(20px)'
+                                        background: `radial-gradient(ellipse at 50% 0%, ${cert.color}20, transparent 50%)`
                                     }}
                                 />
 
                                 {/* Certificate Image */}
-                                <div className="relative h-56 overflow-hidden">
-                                    <Image src={cert.img} alt={cert.title} fill className="object-cover object-top group-hover:scale-115 transition-transform duration-1000 ease-out" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                                <div className="relative h-44 overflow-hidden">
+                                    <Image src={cert.img} alt={cert.title} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-500 ease-out" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 
                                     {/* Premium Floating Badge */}
-                                    <motion.div
-                                        className="absolute top-4 right-4 px-5 py-2.5 rounded-full text-xs font-bold"
-                                        whileHover={{ scale: 1.1 }}
+                                    <div
+                                        className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-[11px] font-bold"
                                         style={{
-                                            background: `linear-gradient(135deg, ${cert.color}50, ${cert.color}20)`,
+                                            background: `linear-gradient(135deg, ${cert.color}40, ${cert.color}15)`,
                                             color: cert.color,
-                                            border: `2px solid ${cert.color}`,
-                                            boxShadow: `0 0 30px ${cert.color}60, inset 0 0 20px ${cert.color}20`,
-                                            backdropFilter: 'blur(10px)'
+                                            border: `1px solid ${cert.color}80`,
+                                            boxShadow: `0 0 16px ${cert.color}40`
                                         }}
                                     >
-                                        <span className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: cert.color }} />
+                                        <span className="flex items-center gap-1.5">
+                                            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: cert.color }} />
                                             {cert.issuer}
                                         </span>
-                                    </motion.div>
-
-                                    {/* Floating Particles */}
-                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-500 overflow-hidden">
-                                        {[...Array(5)].map((_, j) => (
-                                            <div key={j} className="absolute w-1 h-1 rounded-full animate-float"
-                                                style={{
-                                                    background: cert.color,
-                                                    left: `${20 + j * 15}%`,
-                                                    top: `${30 + j * 10}%`,
-                                                    animationDelay: `${j * 0.2}s`,
-                                                    boxShadow: `0 0 10px ${cert.color}`
-                                                }}
-                                            />
-                                        ))}
                                     </div>
                                 </div>
 
                                 {/* Content */}
-                                <div className="p-6 relative">
-                                    <h5 className="text-white font-bold text-lg leading-tight mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:via-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-500 line-clamp-2">
+                                <div className="p-4 relative">
+                                    <h5 className="text-white font-bold text-sm leading-tight mb-3 line-clamp-2">
                                         {cert.title}
                                     </h5>
-                                    <div className="flex items-center gap-3 text-white/60 text-sm">
-                                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+                                    <div className="flex items-center gap-2 text-white/60 text-xs">
+                                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
                                             style={{ background: `${cert.color}15`, border: `1px solid ${cert.color}30` }}>
-                                            <svg className="w-4 h-4" style={{ color: cert.color }} fill="currentColor" viewBox="0 0 20 20">
+                                            <svg className="w-3.5 h-3.5" style={{ color: cert.color }} fill="currentColor" viewBox="0 0 20 20">
                                                 <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                             </svg>
                                             <span className="font-medium">Verified</span>
@@ -412,10 +400,9 @@ export default function TechStack() {
                                 </div>
 
                                 {/* Bottom Accent Glow Line */}
-                                <div className="absolute bottom-0 left-0 right-0 h-1.5 opacity-0 group-hover:opacity-100 transition-all duration-500"
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                                     style={{
-                                        background: `linear-gradient(90deg, transparent, ${cert.color}, transparent)`,
-                                        boxShadow: `0 0 20px ${cert.color}, 0 0 40px ${cert.color}50`
+                                        background: `linear-gradient(90deg, transparent, ${cert.color}, transparent)`
                                     }}
                                 />
                             </motion.a>
@@ -424,19 +411,18 @@ export default function TechStack() {
 
                     {/* Floating Scroll Hint Arrow */}
                     <motion.div
-                        className="absolute right-8 top-1/2 -translate-y-1/2 z-30 pointer-events-none"
-                        animate={{ x: [0, 10, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-30 pointer-events-none"
+                        animate={{ x: [0, 8, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
-                        <div className="flex items-center gap-2 px-4 py-3 rounded-full"
+                        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full"
                             style={{
-                                background: 'linear-gradient(135deg, rgba(0,240,255,0.15), rgba(139,92,246,0.15))',
-                                border: '1px solid rgba(0,240,255,0.3)',
-                                backdropFilter: 'blur(10px)'
+                                background: 'rgba(0,240,255,0.1)',
+                                border: '1px solid rgba(0,240,255,0.25)'
                             }}
                         >
-                            <span className="text-cyan-400 text-xs font-medium">Scroll</span>
-                            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span className="text-cyan-400 text-[10px] font-medium">Scroll</span>
+                            <svg className="w-3 h-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                         </div>

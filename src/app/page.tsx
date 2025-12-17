@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -16,10 +16,6 @@ const Scene = dynamic(() => import('@/components/3d/Scene'), {
   ssr: false,
   loading: () => <div className="fixed inset-0 bg-black -z-10" />
 });
-const TubesCursor = dynamic(() => import('@/components/3d/TubesCursor'), {
-  ssr: false,
-  loading: () => null
-});
 const Robot3D = dynamic(() => import('@/components/3d/Robot3D'), {
   ssr: false,
   loading: () => null // Don't show anything while loading
@@ -30,7 +26,22 @@ export default function Home() {
   const [introComplete, setIntroComplete] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const hasCompleted = useRef(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(
+        window.matchMedia('(max-width: 768px)').matches ||
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0
+      );
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleLoadingComplete = useCallback(() => {
     if (hasCompleted.current) return;
@@ -54,9 +65,6 @@ export default function Home() {
     <>
       {/* Scene ALWAYS renders - Black Hole background visible through all sections */}
       <Scene introComplete={introComplete} />
-
-      {/* Tubes cursor - renders after content is visible for smoother loading */}
-      {contentVisible && <TubesCursor />}
 
       {/* Loading screen on top */}
       {isLoading && (

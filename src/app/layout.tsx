@@ -32,40 +32,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/LOGO.png" type="image/png" />
-        <script
-          type="module"
-          dangerouslySetInnerHTML={{
-            __html: `
-              import TubesCursor from "https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js";
-              
-              function initTubes() {
-                const canvas = document.getElementById('tubes-cursor-canvas');
-                if (!canvas) {
-                  setTimeout(initTubes, 200);
-                  return;
-                }
-                
-                TubesCursor(canvas, {
-                  tubes: {
-                    count: 3,
-                    length: 6,
-                    colors: ["#00f0ff", "#8b5cf6", "#06b6d4"],
-                    lights: {
-                      intensity: 15,
-                      colors: ["#00f0ff", "#8b5cf6", "#06b6d4", "#00d4e6"]
-                    }
-                  }
-                });
-              }
-              
-              if (document.readyState === 'complete') {
-                initTubes();
-              } else {
-                window.addEventListener('load', initTubes);
-              }
-            `
-          }}
-        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

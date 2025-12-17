@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { ExternalLink, Github, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -106,6 +106,14 @@ const itemVariants = {
 
 export default function Portfolio() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleCardClick = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -165,10 +173,14 @@ export default function Portfolio() {
               <motion.div
                 key={project.id}
                 onClick={() => handleCardClick(index)}
-                className="relative cursor-pointer overflow-hidden rounded-xl sm:rounded-2xl min-h-[160px] sm:min-h-[200px] md:min-h-0"
-                variants={cardVariants}
-                initial="collapsed"
-                animate={isActive ? "expanded" : "collapsed"}
+                className="relative cursor-pointer overflow-hidden rounded-xl sm:rounded-2xl"
+                initial={false}
+                animate={{
+                  // On mobile: use height, on desktop: use flex
+                  height: isMobile ? (isActive ? 420 : (isOther ? 80 : 120)) : 'auto',
+                  flex: isMobile ? 'none' : (isActive ? 4 : 1),
+                  opacity: isOther ? 0.6 : 1,
+                }}
                 transition={{
                   type: "spring",
                   stiffness: 200,
@@ -179,9 +191,9 @@ export default function Portfolio() {
                   boxShadow: isActive
                     ? '0 0 60px rgba(0, 240, 255, 0.3), inset 0 0 30px rgba(0, 240, 255, 0.1)'
                     : '0 0 30px rgba(0, 240, 255, 0.15)',
-                  filter: isOther ? 'brightness(0.6) grayscale(0.3)' : 'brightness(1) grayscale(0)',
+                  filter: isMobile ? 'none' : (isOther ? 'brightness(0.6) grayscale(0.3)' : 'brightness(1) grayscale(0)'),
                 }}
-                whileHover={!isActive ? {
+                whileHover={!isActive && !isMobile ? {
                   filter: 'brightness(1) grayscale(0)',
                   scale: 1.01
                 } : {}}
@@ -233,14 +245,14 @@ export default function Portfolio() {
                   </span>
                 </div>
 
-                {/* Vertical title (when collapsed) */}
+                {/* Title - horizontal on mobile collapsed, vertical on desktop collapsed */}
                 <motion.div
                   className="absolute z-20 font-bold text-sm sm:text-lg text-cyan-400 whitespace-nowrap"
                   animate={{
-                    left: isActive ? 16 : 20,
-                    bottom: isActive ? 'auto' : 60,
-                    top: isActive ? 50 : 'auto',
-                    rotate: isActive ? 0 : -90,
+                    left: isActive ? 16 : (isMobile ? 50 : 20),
+                    bottom: isActive ? 'auto' : (isMobile ? 'auto' : 60),
+                    top: isActive ? 50 : (isMobile ? 14 : 'auto'),
+                    rotate: isActive ? 0 : (isMobile ? 0 : -90),
                   }}
                   transition={{ type: "spring", stiffness: 200, damping: 30 }}
                   style={{
