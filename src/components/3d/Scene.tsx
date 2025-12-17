@@ -47,7 +47,7 @@ export default function Scene({ introComplete = false }: SceneProps) {
         }
 
         const stars: Star[] = [];
-        const numStars = 80; // Reduced for better performance
+        const numStars = 60; // Reduced from 80 for better performance
         const colors = [
             'rgba(255, 255, 255, ',
             'rgba(200, 220, 255, ',
@@ -59,10 +59,10 @@ export default function Scene({ introComplete = false }: SceneProps) {
                 stars.push({
                     x: Math.random() * canvas!.width,
                     y: Math.random() * canvas!.height,
-                    z: Math.random() * 1.5 + 0.3,
-                    size: Math.random() * 1.0 + 0.3,
+                    z: Math.random() * 1.2 + 0.3, // Reduced depth range
+                    size: Math.random() * 0.8 + 0.3, // Smaller stars
                     color: colors[Math.floor(Math.random() * colors.length)],
-                    twinkleSpeed: Math.random() * 0.01 + 0.005,
+                    twinkleSpeed: Math.random() * 0.008 + 0.004, // Slower twinkle
                     twinkleOffset: Math.random() * Math.PI * 2
                 });
             }
@@ -90,8 +90,8 @@ export default function Scene({ introComplete = false }: SceneProps) {
             const height = window.innerHeight;
 
             stars.forEach(star => {
-                const parallaxX = mouseX * star.z * 8;
-                const parallaxY = mouseY * star.z * 8;
+                const parallaxX = mouseX * star.z * 5; // Reduced from 8 for smoother effect
+                const parallaxY = mouseY * star.z * 5;
 
                 const x = star.x + parallaxX;
                 const y = star.y + parallaxY;
@@ -118,9 +118,9 @@ export default function Scene({ introComplete = false }: SceneProps) {
             }
             lastFrameTime = currentTime - (deltaTime % frameInterval);
 
-            // Smooth mouse interpolation
-            mouseX += (targetMouseX - mouseX) * 0.08;
-            mouseY += (targetMouseY - mouseY) * 0.08;
+            // Smooth mouse interpolation - reduced for less CPU work
+            mouseX += (targetMouseX - mouseX) * 0.05; // Reduced from 0.08
+            mouseY += (targetMouseY - mouseY) * 0.05;
 
             if (!ctx || !canvas) {
                 animationId = requestAnimationFrame(animate);
@@ -214,7 +214,7 @@ export default function Scene({ introComplete = false }: SceneProps) {
                     vec2 v = c;
                     v *= mat2(cos(log(length(v)) + t * 0.2 + vec4(0.0, 33.0, 11.0, 0.0))) * 5.0;
                     vec4 animAccum = vec4(0.0);
-                    for (int i = 1; i <= 6; i++) { // Restored to 6 iterations for quality
+                    for (int i = 1; i <= 5; i++) { // Reduced from 6 to 5 iterations for performance
                         float fi = float(i);
                         animAccum += sin(vec4(v.x, v.y, v.y, v.x)) + vec4(1.0);
                         v += 0.7 * sin(vec2(v.y, v.x) * fi + t) / fi + 0.5;
@@ -313,7 +313,7 @@ export default function Scene({ introComplete = false }: SceneProps) {
 
             function resize() {
                 if (!canvas || !gl) return;
-                const dpr = Math.min(window.devicePixelRatio, 1.5); // Restored for quality
+                const dpr = Math.min(window.devicePixelRatio, 1.25); // Reduced from 1.5 for better performance
                 canvas.width = window.innerWidth * dpr;
                 canvas.height = window.innerHeight * dpr;
                 canvas.style.width = window.innerWidth + 'px';
@@ -364,8 +364,8 @@ export default function Scene({ introComplete = false }: SceneProps) {
 
                 const delta = (currentTime - startTime) / 1000;
 
-                // Smoother scroll interpolation
-                scrollProgress += (targetScrollProgress - scrollProgress) * 0.08;
+                // Smoother scroll interpolation - faster response
+                scrollProgress += (targetScrollProgress - scrollProgress) * 0.12; // Increased from 0.08 for snappier feel
                 // Black hole on right side (offset 0.7 when at top)
                 const offset = 0.7 * (1 - scrollProgress);
 

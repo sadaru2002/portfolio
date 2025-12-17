@@ -21,9 +21,8 @@ export default function About() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'linear-gradient(180deg, rgba(2,4,16,0.9) 0%, rgba(2,4,16,0.85) 50%, rgba(2,4,16,0.9) 100%)',
-          backdropFilter: 'blur(30px)',
-          WebkitBackdropFilter: 'blur(30px)',
+          background: 'linear-gradient(180deg, rgba(2,4,16,0.92) 0%, rgba(2,4,16,0.88) 50%, rgba(2,4,16,0.92) 100%)',
+          /* Removed backdrop blur for better scroll performance - using solid gradient instead */
         }}
       />
 

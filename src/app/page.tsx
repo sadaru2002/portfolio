@@ -42,11 +42,11 @@ export default function Home() {
     // Start the blur-to-clear transition immediately
     setIntroComplete(true);
 
-    // Show content faster - reduced delay
+    // Show content faster - minimal delay
     requestAnimationFrame(() => {
       setTimeout(() => {
         setContentVisible(true);
-      }, 600);
+      }, 200); // Reduced from 600ms for snappier feel
     });
   }, []);
 
@@ -75,8 +75,8 @@ export default function Home() {
         {/* Robot appears after content is visible */}
         <div style={{
           opacity: contentVisible ? 1 : 0,
-          transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-          transitionDelay: '0.3s',
+          transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+          transitionDelay: '0.1s', // Reduced from 0.3s
           willChange: contentVisible ? 'auto' : 'opacity',
         }}>
           <Robot3D onChatOpen={() => setIsChatOpen(true)} isChatOpen={isChatOpen} />
@@ -93,8 +93,8 @@ export default function Home() {
           right: 0,
           opacity: contentVisible ? 1 : 0,
           transform: contentVisible ? 'translateY(0)' : 'translateY(-20px)',
-          transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-          transitionDelay: '0.2s',
+          transition: 'opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+          transitionDelay: '0.05s', // Reduced from 0.2s
           zIndex: 60000,
           pointerEvents: contentVisible ? 'auto' : 'none',
           willChange: contentVisible ? 'auto' : 'opacity, transform',
@@ -107,13 +107,12 @@ export default function Home() {
 
         {/* Other sections - subtle glassy overlay - black hole 70% visible */}
         <div className="relative">
-          {/* Light glassy backdrop - reduced blur for performance */}
+          {/* Light glassy backdrop - minimal blur for performance */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: 'rgba(2, 4, 16, 0.4)',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)',
+              background: 'rgba(2, 4, 16, 0.5)',
+              /* Removed backdrop blur for better scroll performance */
             }}
           />
 

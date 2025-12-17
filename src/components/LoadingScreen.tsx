@@ -14,16 +14,16 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
         if (hasRun.current) return;
         hasRun.current = true;
 
-        // Phase 1: Hello animation (2.5 seconds - slightly faster)
+        // Phase 1: Hello animation (1.8 seconds - faster)
         const helloTimer = setTimeout(() => {
             setPhase('blur');
-        }, 2500);
+        }, 1800);
 
-        // Phase 2: Blur overlay (0.5 second) - faster transition
+        // Phase 2: Blur overlay (0.3 second) - faster transition
         const blurTimer = setTimeout(() => {
             setPhase('done');
             onLoadingComplete();
-        }, 3000);
+        }, 2100);
 
         return () => {
             clearTimeout(helloTimer);
@@ -79,8 +79,8 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
                                 strokeWidth: '35px',
                                 strokeDasharray: '5800px',
                                 strokeDashoffset: '5800px',
-                                animation: 'drawHello 2.5s linear forwards',
-                                filter: 'drop-shadow(0 0 30px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 60px rgba(0, 255, 255, 0.5))',
+                                animation: 'drawHello 1.8s linear forwards',
+                                filter: 'drop-shadow(0 0 20px rgba(0, 255, 255, 0.7))',  /* Simplified filter for better performance */
                                 willChange: 'stroke-dashoffset',
                                 transform: 'translate3d(0, 0, 0)',
                             }}

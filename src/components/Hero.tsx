@@ -10,7 +10,7 @@ interface HeroProps {
 
 // Memoized transition config for performance
 const smoothTransition = {
-  duration: 0.8,
+  duration: 0.6, // Reduced from 0.8 for snappier feel
   ease: [0.25, 0.46, 0.45, 0.94] as const, // Smooth cubic-bezier
 };
 
@@ -35,7 +35,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
           opacity: contentVisible ? 1 : 0,
           y: contentVisible ? 0 : -20
         }}
-        transition={{ ...smoothTransition, delay: 0.4 }}
+        transition={{ ...smoothTransition, delay: 0.2 }}
         whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
         className="absolute top-4 left-4 sm:top-6 sm:left-12 md:left-20 z-[100] cursor-pointer"
         style={{ willChange: 'transform, opacity' }}
@@ -56,7 +56,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
           opacity: contentVisible ? 1 : 0,
           x: contentVisible ? 0 : -50
         }}
-        transition={{ ...smoothTransition, delay: 0.1 }}
+        transition={{ ...smoothTransition, delay: 0.05 }}
         className="w-full md:w-1/2 px-4 sm:pl-12 md:pl-20 pr-4 sm:pr-6"
         style={{ willChange: contentVisible ? 'auto' : 'transform, opacity' }}
       >
@@ -69,7 +69,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             y: contentVisible ? 0 : 50
           }}
-          transition={{ ...smoothTransition, delay: 0.2 }}
+          transition={{ ...smoothTransition, delay: 0.1 }}
         >
           <motion.span
             className="block text-white"
@@ -78,7 +78,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
               opacity: contentVisible ? 1 : 0,
               y: contentVisible ? 0 : 30
             }}
-            transition={{ ...smoothTransition, delay: 0.3 }}
+            transition={{ ...smoothTransition, delay: 0.15 }}
           >
             I'M
           </motion.span>
@@ -90,7 +90,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
               opacity: contentVisible ? 1 : 0,
               y: contentVisible ? 0 : 30
             }}
-            transition={{ ...smoothTransition, delay: 0.4 }}
+            transition={{ ...smoothTransition, delay: 0.2 }}
           >
             THILINA
           </motion.span>
@@ -102,7 +102,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
               opacity: contentVisible ? 1 : 0,
               y: contentVisible ? 0 : 30
             }}
-            transition={{ ...smoothTransition, delay: 0.5 }}
+            transition={{ ...smoothTransition, delay: 0.25 }}
           >
             SANDARUWAN.
           </motion.span>
@@ -116,7 +116,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             x: contentVisible ? 0 : -20
           }}
-          transition={{ ...smoothTransition, delay: 0.6 }}
+          transition={{ ...smoothTransition, delay: 0.3 }}
         >
           <div
             className="w-3 h-3 rounded-full animate-pulse"
@@ -135,7 +135,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             y: contentVisible ? 0 : 20
           }}
-          transition={{ ...smoothTransition, delay: 0.7 }}
+          transition={{ ...smoothTransition, delay: 0.35 }}
         >
           Crafting immersive digital experiences where code meets creativity.
           Building the future, one pixel at a time.
@@ -148,7 +148,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             y: contentVisible ? 0 : 20
           }}
-          transition={{ ...smoothTransition, delay: 0.8 }}
+          transition={{ ...smoothTransition, delay: 0.4 }}
         >
           <a
             href="/cv.pdf"
@@ -185,7 +185,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
           opacity: contentVisible ? 1 : 0,
           y: contentVisible ? 0 : 20
         }}
-        transition={{ ...smoothTransition, delay: 0.9 }}
+        transition={{ ...smoothTransition, delay: 0.45 }}
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
@@ -193,7 +193,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             duration: 1.5,
             repeat: Infinity,
             ease: 'easeInOut',
-            delay: contentVisible ? 1.2 : 0
+            delay: contentVisible ? 0.6 : 0
           }}
           className="flex flex-col items-center gap-2"
           style={{ willChange: 'transform' }}

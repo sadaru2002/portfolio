@@ -38,6 +38,7 @@ body {
 canvas[class*="fixed"] {
   contain: strict;
   will-change: contents;
+  transform: translateZ(0);
 }
 
 /* Performance: Optimize sections for paint containment */
@@ -50,6 +51,25 @@ section {
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   perspective: 1000px;
+}
+
+/* Optimize motion elements */
+[data-motion],
+.motion-div {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Reduce paint complexity on scroll */
+main {
+  isolation: isolate;
+}
+
+/* Optimize fixed elements */
+[style*="position: fixed"],
+.fixed {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* Reduce motion for users who prefer it */
