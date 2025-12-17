@@ -332,6 +332,7 @@ export default function TechStack() {
                             { title: "Machine Learning with Python", issuer: "IBM", color: "#ec4899", href: "https://www.coursera.org/account/accomplishments/records/BN5J3LCJ6WED", img: "/cert-3.png" },
                             { title: "Oracle Cloud Infrastructure Foundations", issuer: "Oracle", color: "#fb923c", href: "https://catalog-education.oracle.com/pls/certview/sharebadge?id=3F67FB56DBCB9318F975F2D70147FCA29CEF643E1309DC12B45600FEB27F33F5", img: "/cert-4.png" },
                             { title: "AWS Cloud Technical Essentials", issuer: "AWS", color: "#00e800", href: "https://www.coursera.org/account/accomplishments/records/7BL4KITYIBMJ", img: "/cert-5.png" }
+                            { title: "Introduction to Containers w/ Docker, Kubernetes & OpenShift", issuer: "IBM", color: "#32a0a8", href: "https://coursera.org/share/0bdcd6f5561515e193f76c478c5c343b", img: "/cert-6.png" }
                         ].map((cert, i) => (
                             <motion.a
                                 key={i}
