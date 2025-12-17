@@ -10,6 +10,15 @@ export default function Scene({ introComplete = false }: SceneProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const starsRef = useRef<HTMLCanvasElement>(null);
     const [visible, setVisible] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Detect mobile
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Simple fade in after intro - immediate
     useEffect(() => {

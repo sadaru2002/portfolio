@@ -26,7 +26,7 @@ export default function Logo() {
                 scale: 1.1,
                 transition: { duration: 0.3 }
             }}
-            className="absolute top-6 left-12 md:left-20 z-[100] cursor-pointer"
+            className="hidden sm:block absolute top-6 left-12 md:left-20 z-[100] cursor-pointer"
             onClick={handleClick}
         >
             <motion.div

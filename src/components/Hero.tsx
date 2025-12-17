@@ -10,8 +10,8 @@ interface HeroProps {
 
 // Memoized transition config for performance
 const smoothTransition = {
-  duration: 0.6, // Reduced from 0.8 for snappier feel
-  ease: [0.25, 0.46, 0.45, 0.94] as const, // Smooth cubic-bezier
+  duration: 0.4, // Faster for snappier feel
+  ease: [0.4, 0, 0.2, 1] as const, // Standard ease-out
 };
 
 export default function Hero({ contentVisible = true }: HeroProps) {
@@ -28,7 +28,7 @@ export default function Hero({ contentVisible = true }: HeroProps) {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center z-10">
-      {/* Logo - positioned at top left of hero section */}
+      {/* Logo - positioned at top left of hero section, hidden on mobile */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{
@@ -37,17 +37,11 @@ export default function Hero({ contentVisible = true }: HeroProps) {
         }}
         transition={{ ...smoothTransition, delay: 0.2 }}
         whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-        className="absolute top-4 left-4 sm:top-6 sm:left-12 md:left-20 z-[100] cursor-pointer"
+        className="hidden sm:block absolute top-4 left-4 sm:top-6 sm:left-12 md:left-20 z-[100] cursor-pointer"
         style={{ willChange: 'transform, opacity' }}
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
-        <motion.div
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          style={{ willChange: 'transform' }}
-        >
-          <Image src="/LOGO.png" alt="Logo" width={76} height={76} priority />
-        </motion.div>
+        <Image src="/LOGO.png" alt="Logo" width={76} height={76} priority />
       </motion.div>
       {/* Left side - Text Content */}
       <motion.div
@@ -62,50 +56,21 @@ export default function Hero({ contentVisible = true }: HeroProps) {
       >
         {/* Main headline with name */}
         <motion.h1
-          className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.95] mb-4 sm:mb-6 tracking-tight"
-          style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-          initial={{ opacity: 0, y: 50 }}
+          className="text-5xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.95] mb-4 sm:mb-6 tracking-tight"
+          style={{ 
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 4px 40px rgba(0,0,0,0.6)'
+          }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{
             opacity: contentVisible ? 1 : 0,
-            y: contentVisible ? 0 : 50
+            y: contentVisible ? 0 : 30
           }}
-          transition={{ ...smoothTransition, delay: 0.1 }}
+          transition={{ ...smoothTransition, delay: 0.05 }}
         >
-          <motion.span
-            className="block text-white"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{
-              opacity: contentVisible ? 1 : 0,
-              y: contentVisible ? 0 : 30
-            }}
-            transition={{ ...smoothTransition, delay: 0.15 }}
-          >
-            I'M
-          </motion.span>
-          <motion.span
-            className="block"
-            style={{ color: '#00F0FF' }}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{
-              opacity: contentVisible ? 1 : 0,
-              y: contentVisible ? 0 : 30
-            }}
-            transition={{ ...smoothTransition, delay: 0.2 }}
-          >
-            THILINA
-          </motion.span>
-          <motion.span
-            className="block"
-            style={{ color: '#00F0FF' }}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{
-              opacity: contentVisible ? 1 : 0,
-              y: contentVisible ? 0 : 30
-            }}
-            transition={{ ...smoothTransition, delay: 0.25 }}
-          >
-            SANDARUWAN.
-          </motion.span>
+          <span className="block text-white">I'M</span>
+          <span className="block" style={{ color: '#00F0FF' }}>THILINA</span>
+          <span className="block" style={{ color: '#00F0FF' }}>SANDARUWAN.</span>
         </motion.h1>
 
         {/* Developer & Creative Thinker tagline */}
@@ -116,26 +81,26 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             x: contentVisible ? 0 : -20
           }}
-          transition={{ ...smoothTransition, delay: 0.3 }}
+          transition={{ ...smoothTransition, delay: 0.1 }}
         >
           <div
             className="w-3 h-3 rounded-full animate-pulse"
             style={{ backgroundColor: '#00F0FF' }}
           />
-          <span className="text-gray-300 text-xs sm:text-sm md:text-base tracking-widest font-mono uppercase">
+          <span className="text-gray-300 text-sm sm:text-sm md:text-base tracking-widest font-mono uppercase">
             Developer // Creative Thinker
           </span>
         </motion.div>
 
         {/* Description */}
         <motion.p
-          className="text-sm sm:text-base md:text-lg text-gray-400 mb-6 sm:mb-8 max-w-md leading-relaxed"
+          className="text-base sm:text-base md:text-lg text-gray-400 mb-6 sm:mb-8 max-w-md leading-relaxed"
           initial={{ opacity: 0, y: 20 }}
           animate={{
             opacity: contentVisible ? 1 : 0,
             y: contentVisible ? 0 : 20
           }}
-          transition={{ ...smoothTransition, delay: 0.35 }}
+          transition={{ ...smoothTransition, delay: 0.15 }}
         >
           Crafting immersive digital experiences where code meets creativity.
           Building the future, one pixel at a time.
@@ -148,12 +113,12 @@ export default function Hero({ contentVisible = true }: HeroProps) {
             opacity: contentVisible ? 1 : 0,
             y: contentVisible ? 0 : 20
           }}
-          transition={{ ...smoothTransition, delay: 0.4 }}
+          transition={{ ...smoothTransition, delay: 0.2 }}
         >
           <a
             href="/cv.pdf"
             target="_blank"
-            className="inline-flex items-center gap-2 px-8 py-4 text-black font-bold rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/30"
+            className="inline-flex items-center gap-2 px-8 py-4 text-black font-bold rounded-full transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/30"
             style={{ backgroundColor: '#00F0FF' }}
           >
             DOWNLOAD CV
@@ -180,34 +145,21 @@ export default function Hero({ contentVisible = true }: HeroProps) {
       {/* Scroll Indicator */}
       <motion.div
         className="absolute bottom-10 left-1/2 -translate-x-1/2"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{
-          opacity: contentVisible ? 1 : 0,
-          y: contentVisible ? 0 : 20
-        }}
-        transition={{ ...smoothTransition, delay: 0.45 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: contentVisible ? 1 : 0 }}
+        transition={{ ...smoothTransition, delay: 0.25 }}
       >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: contentVisible ? 0.6 : 0
-          }}
-          className="flex flex-col items-center gap-2"
-          style={{ willChange: 'transform' }}
-        >
+        <div className="flex flex-col items-center gap-2">
           <span className="text-gray-500 text-xs tracking-widest uppercase">Scroll</span>
           <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center pt-2">
             <motion.div
               className="w-1.5 h-3 rounded-full"
               style={{ backgroundColor: '#00F0FF' }}
-              animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
             />
           </div>
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   );
